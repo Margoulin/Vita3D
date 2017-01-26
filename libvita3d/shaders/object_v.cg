@@ -1,0 +1,12 @@
+uniform float4x4 u_model_matrix;
+uniform float4x4 u_view_matrix;
+uniform float4x4 u_projection_matrix;
+
+
+float4 main(float3 position: POSITION, float4 out outColor : COLOR) : POSITION
+{
+	float4x4 tempMat = mul(u_model_matrix, u_view_matrix);
+	tempMat = mul(tempMat, u_projection_matrix);
+	outColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	return mul(float4(position, 1.0f), tempMat);
+}
