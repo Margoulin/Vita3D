@@ -103,7 +103,7 @@ auto	ShaderManager::Initialize() -> void
 	clearVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
 	clearVertexAttributes[0].componentCount = 2;
 	clearVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramClearPositionAttribute);
-	clearVertexStreams[0].stride = sizeof(Vector2);
+	clearVertexStreams[0].stride = sizeof(Vector2F);
 	clearVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
 
 	sceGxmShaderPatcherCreateVertexProgram(
@@ -124,9 +124,9 @@ auto	ShaderManager::Initialize() -> void
 		clearVertexProgramGxp,
 		&clearFragmentProgram);
 
-	clearVertices = (Vector2*)gpu_alloc(
+	clearVertices = (Vector2F*)gpu_alloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-		3 * sizeof(Vector2),
+		3 * sizeof(Vector2F),
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&clearVerticesUid);
@@ -158,7 +158,7 @@ auto	ShaderManager::Initialize() -> void
 	objectVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
 	objectVertexAttributes[0].componentCount = 3;
 	objectVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramObjectPositionAttribute);
-	objectVertexStreams[0].stride = 3 * sizeof(float);
+	objectVertexStreams[0].stride = sizeof(Vector3F);
 	objectVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
 	
 	sceGxmShaderPatcherCreateVertexProgram(

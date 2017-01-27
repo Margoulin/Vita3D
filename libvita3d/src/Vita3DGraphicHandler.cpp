@@ -170,9 +170,9 @@ auto	Vita3DGraphicHandler::Initialize() -> void
 	backBufferIndex = 0;
 	frontBufferIndex = 0;
 
-	cubeVertices = (Vector3*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-		8 * sizeof(Vector3),
-		sizeof(Vector3),
+	cubeVertices = (Vector3F*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+		8 * sizeof(Vector3F),
+		sizeof(Vector3F),
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&cubeVerticesUID);
 

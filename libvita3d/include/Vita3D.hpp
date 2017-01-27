@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-#include "Vita3DMath.hpp"
+#include "Vita3DMath/Vita3DMath.hpp"
 
 #define RGBA8(r,g,b,a) ((((a)&0xFF)<<24) | (((b)&0xFF)<<16) | (((g)&0xFF)<<8) | (((r)&0xFF)<<0))
 
@@ -36,12 +36,13 @@ public:
 	static	auto	GetCurrentFB() -> void*;
 	static	auto	SetRegionClip(SceGxmRegionClipMode mode, unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max) -> void;
 
-	static	auto	GetCameraPos() -> Vector3*;
+	static	auto	GetCameraPos() -> Vector3F*;
 	static	auto	SetCameraPos(float x, float y, float z) -> void;
 
 	static bool	Initialized;
 
 	static	auto	DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
+	static	auto	DrawCube(Vector3F position, Vector3F scale, unsigned int color) -> void;
 	//static	auto	DrawObject(Vita3DObj* object, float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
 
 	auto	operator = (const Vita3D&)->Vita3D& = delete;

@@ -4,7 +4,7 @@
 #include <psp2/types.h>
 #include <psp2/gxm.h>
 
-#include "Vita3DMath.hpp"
+#include "Vita3DMath/Vector.hpp"
 
 #define MSAA_MODE			SCE_GXM_MULTISAMPLE_NONE
 
@@ -38,7 +38,7 @@ public:
 
 	SceUID clearVerticesUid = 0;
 	SceUID clearIndicesUid = 0;
-	Vector2 *clearVertices = nullptr;
+	Vector2F *clearVertices = nullptr;
 	uint16_t *clearIndices = nullptr;
 
 	SceGxmVertexProgram *_vita3d_objectVertexProgram = nullptr;

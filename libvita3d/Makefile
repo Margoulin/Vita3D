@@ -45,5 +45,8 @@ install: $(TARGET_LIB)
 	@mkdir -p $(DESTDIR)$(PREFIX)/lib/
 	cp $(TARGET_LIB) $(DESTDIR)$(PREFIX)/lib/
 	@mkdir -p $(DESTDIR)$(PREFIX)/include/
+	@mkdir -p $(DESTDIR)$(PREFIX)/include/Vita3DMath
 	cp include/Vita3D.hpp $(DESTDIR)$(PREFIX)/include/
-	cp include/Vita3DMath.hpp $(DESTDIR)$(PREFIX)/include/
+	cp include/Vita3DMath/Vita3DMath.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/
+	cp include/Vita3DMath/Math.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/
+	cp include/Vita3DMath/Vector.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/

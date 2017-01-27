@@ -1,1 +1,8 @@
 libvita3d/out
+*.o
+*elf
+*.velf
+*.bin
+*.a
+*.vpk
+*.sfo

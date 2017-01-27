@@ -1,7 +1,7 @@
 #ifndef __VITA3DOBJ_HPP__
 #define __VITA3DOBJ_HPP__
 
-#include "Vita3DMath.hpp"
+#include "Vita3DMath/Vita3DMath.hpp"
 #include <psp2/types.h>
 #include <string>
 
@@ -21,7 +21,7 @@ public:
 protected:
 
 private:
-	Vector3*	vertices = nullptr;
+	Vector3F*	vertices = nullptr;
 	int*		indices = nullptr;
 	std::string	filename;
 	bool		loaded = false;

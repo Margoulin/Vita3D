@@ -5,6 +5,8 @@
 
 #include "ShaderManager.hpp"
 
+#include "Vita3DMath/Vector.hpp"
+
 #define DISPLAY_WIDTH			960
 #define DISPLAY_HEIGHT			544
 #define DISPLAY_STRIDE_IN_PIXELS	1024
@@ -64,7 +66,8 @@ public:
 	unsigned int backBufferIndex = 0;
 	unsigned int frontBufferIndex = 0;
 
-	Vector3*	cubeVertices = nullptr;
+	Vector3F*	cubeVertices = nullptr;
+	//Vector3*	cubeVertices = nullptr;
 	SceUID		cubeVerticesUID;
 	uint16_t*	cubeIndices = nullptr;
 	SceUID		cubeIndicesUID;

@@ -16,7 +16,7 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 	if (tinyobj::LoadObj(&attrib, &shapes, &materials, &err, name.c_str()) == false)
 		return;
 
-	std::vector<Vector3>	tempVertices;
+	std::vector<Vector3F>	tempVertices;
 	std::vector<int>		tempIndices;
 
 	for (size_t s = 0; s < shapes.size(); s++)
@@ -32,7 +32,7 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 				float vx = attrib.vertices[3 * idx.vertex_index + 0];
 				float vy = attrib.vertices[3 * idx.vertex_index + 1];
 				float vz = attrib.vertices[3 * idx.vertex_index + 2];
-				Vector3 st;
+				Vector3F st;
 				st.x = vx;
 				st.y = vy;
 				st.z = vz;
@@ -45,9 +45,9 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 		}
 	}
 
-	vertices = (Vector3*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-		tempVertices.size() * sizeof(Vector3),
-		sizeof(Vector3),
+	vertices = (Vector3F*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+		tempVertices.size() * sizeof(Vector3F),
+		sizeof(Vector3F),
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&verticesID);
 

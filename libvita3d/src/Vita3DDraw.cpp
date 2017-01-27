@@ -6,9 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Vector3 cameraPos;
+Vector3F cameraPos;
 
-auto	Vita3D::GetCameraPos() -> Vector3*
+auto	Vita3D::GetCameraPos() -> Vector3F*
 {
 	return &cameraPos;
 }
@@ -22,10 +22,16 @@ auto	 Vita3D::SetCameraPos(float x, float y, float z) -> void
 
 auto Vita3D::DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void
 {
+	Vita3D::DrawCube(Vector3F(x, y, z), Vector3F(w, h, d), color);
+}
+
+auto Vita3D::DrawCube(Vector3F position, Vector3F scale, unsigned int color) -> void
+{
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 	
-	glm::mat4 translationMat = glm::translate(glm::mat4(), glm::vec3(-x, y, z));
-	glm::mat4 scaleMat = glm::scale(glm::mat4(), glm::vec3(w, h, d));
+	glm::mat4 translationMat = glm::translate(glm::mat4(), glm::vec3(-position.x, position.y, position.z));
+
+	glm::mat4 scaleMat = glm::scale(glm::mat4(), glm::vec3(scale.x, scale.y, scale.z));
 	
 	glm::mat4 rotateMat(1.0f);
 		
