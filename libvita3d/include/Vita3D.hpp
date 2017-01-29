@@ -43,6 +43,7 @@ public:
 
 	static	auto	DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
 	static	auto	DrawCube(Vector3F position, Vector3F scale, unsigned int color) -> void;
+	static	auto	DrawCube(Transform const& transform, unsigned int color) -> void;
 	//static	auto	DrawObject(Vita3DObj* object, float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
 
 	auto	operator = (const Vita3D&)->Vita3D& = delete;
