@@ -38,7 +38,9 @@ Vector4F::Vector4F(const Vector2F & v, float z, float w)
 auto	Vector4F::Normalize() -> void
 {
 	float _norm = sqrtf(x*x + y*y + z*z + w*w);
-		x /= _norm;
+	if (_norm == 0)
+		return;
+	x /= _norm;
 	y /= _norm;
 	z /= _norm;
 	w /= _norm;
@@ -49,6 +51,8 @@ auto	Vector4F::Normalize() -> void
 auto	Vector4F::Normalized() const -> Vector4F
 {
 	float _norm = sqrtf(x*x + y*y + z*z + w*w);
+	if (_norm == 0)
+		return *this;
 	return Vector4F(x / _norm, y / _norm, z / _norm, w / _norm);
 }
 
