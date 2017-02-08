@@ -51,3 +51,5 @@ install: $(TARGET_LIB)
 	cp include/Vita3DMath/Math.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/
 	cp include/Vita3DMath/Vector.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/
 	cp include/Vita3DMath/Transform.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/
+	cp include/Vita3DMath/Matrix.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/
+	cp include/Vita3DMath/Quaternion.hpp $(DESTDIR)$(PREFIX)/include/Vita3DMath/

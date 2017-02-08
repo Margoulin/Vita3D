@@ -86,6 +86,10 @@ auto	ArcTan(float a) -> float
 	return atan(a);
 }
 
+auto	Atan2F(float a, float b) -> float
+{
+	return atan2f(a, b);
+}
 
 auto	Ceil(float a) -> float
 {

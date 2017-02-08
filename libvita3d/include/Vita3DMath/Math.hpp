@@ -24,6 +24,7 @@ auto	Tan(float a) -> float;
 auto	ArcCos(float a) -> float;
 auto	ArcSin(float a) -> float;
 auto	ArcTan(float a) -> float;
+auto	Atan2F(float a, float b) -> float;
 
 auto	Ceil(float a) -> float;
 auto	Floor(float a) -> float;
