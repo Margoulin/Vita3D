@@ -32,9 +32,9 @@ int main()
 		if (pad.buttons == SCE_CTRL_RIGHT)
 			Vita3D::SetCameraPos(pos->x + 0.15f, pos->y, pos->z);
 		if (pad.buttons == SCE_CTRL_UP)
-			Vita3D::SetCameraPos(pos->x, pos->y + 0.15f, pos->z);
+			Vita3D::SetCameraPos(pos->x, pos->y, pos->z + 0.15f);
 		if (pad.buttons == SCE_CTRL_DOWN)
-			Vita3D::SetCameraPos(pos->x, pos->y - 0.15f, pos->z);
+			Vita3D::SetCameraPos(pos->x, pos->y, pos->z - 0.15f);
 		
 		int stickLX = pad.lx - 128;
 		int stickLY = pad.ly - 128;

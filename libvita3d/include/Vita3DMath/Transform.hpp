@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include "Vita3DMath/Vector.hpp"
+#include "Vita3DMath/Matrix.hpp"
+
 class Transform
 {
 public:
@@ -12,13 +15,13 @@ public:
 	Transform(Transform&&) = delete;
 	~Transform() = default;
 
-	auto	SetPosition(glm::vec3 const& value) -> void { Position = value; }
-	auto	SetScale(glm::vec3 const& value) -> void { Scale = value; }
-	auto	SetRotation(glm::vec3 const& value) -> void;
+	auto	SetPosition(Vector3F const& value) -> void { Position = value; }
+	auto	SetScale(Vector3F const& value) -> void { Scale = value; }
+	auto	SetRotation(Vector3F const& value) -> void;
 
-	auto	GetLocalMatrix() const -> glm::mat4;
-	auto	GetPosition() const -> glm::vec3 { return Position; }
-	auto	GetScale() const -> glm::vec3 { return Scale; }
+	auto	GetLocalMatrix() const -> Matrix4x4F;
+	auto	GetPosition() const -> Vector3F { return Position; }
+	auto	GetScale() const -> Vector3F { return Scale; }
 	auto	GetRotation() const -> glm::vec3 { return glm::eulerAngles(Rotation); }
 
 	auto	operator = (const Transform&)->Transform& = delete;
@@ -27,8 +30,8 @@ public:
 protected:
 
 private:
-	glm::vec3	Position;
-	glm::vec3	Scale;
+	Vector3F	Position;
+	Vector3F	Scale;
 	glm::quat	Rotation;
 };
 

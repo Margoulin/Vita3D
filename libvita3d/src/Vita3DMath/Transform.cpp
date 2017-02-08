@@ -8,21 +8,23 @@ Transform::Transform()
 {
 }
 
-auto	Transform::SetRotation(glm::vec3 const& value)-> void
+auto	Transform::SetRotation(Vector3F const& value)-> void
 {
+	/*
 	glm::quat identity = glm::quat();
 	Rotation = identity;
-	glm::quat y = glm::angleAxis(glm::radians(value.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::quat z = glm::angleAxis(glm::radians(value.z), glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::quat x = glm::angleAxis(glm::radians(value.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::quat y = glm::angleAxis(glm::radians(value.y), Vector3F(0.0f, 1.0f, 0.0f));
+	glm::quat z = glm::angleAxis(glm::radians(value.z), Vector3F(0.0f, 0.0f, 1.0f));
+	glm::quat x = glm::angleAxis(glm::radians(value.x), Vector3F(1.0f, 0.0f, 0.0f));
 	Rotation = identity * y * z * x;
+	*/
 }
 
-auto	Transform::GetLocalMatrix() const -> glm::mat4
+auto	Transform::GetLocalMatrix() const -> Matrix4x4F
 {
-	glm::mat4	identity;
-	glm::mat4	translateMat = glm::translate(identity, Position);
-	glm::mat4	rotateMat = glm::mat4_cast(Rotation);
-	glm::mat4	scaleMat = glm::scale(identity, Scale);
-	return translateMat * rotateMat * scaleMat;
+	Matrix4x4F	translateMat = Matrix4x4F::Translate(Matrix4x4F::identity, Position);
+	//glm::mat4	rotateMat = glm::mat4_cast(Rotation);
+	Matrix4x4F	scaleMat = Matrix4x4F::Scale(Matrix4x4F::identity, Scale);
+	//return translateMat * rotateMat * scaleMat;
+	return Matrix4x4F::Mult(translateMat, scaleMat);
 }
