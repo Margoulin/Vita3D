@@ -2,10 +2,13 @@
 #define __VITA3DGRAPHICHANDLER_HPP__
 
 #include <psp2/gxm.h>
+#include <map>
 
 #include "ShaderManager.hpp"
 
 #include "Vita3DMath/Vector.hpp"
+
+#include "Vita3DObj.hpp"
 
 #define DISPLAY_WIDTH			960
 #define DISPLAY_HEIGHT			544
@@ -44,6 +47,17 @@ public:
 
 	ShaderManager				shaderManager;
 
+	std::map<int, Vita3DObj*>	customObjects;
+	int	objNbr = 0;
+
+	Vita3DObj	Primitives[3];
+
+	auto		LoadObject(std::string const& filename) -> int;
+	auto		UploadObjectInVRAM(int id) -> void;
+	auto		DeleteObjectInVRAM(int id) -> void;
+	auto		DrawObject(int id) -> void;
+	auto		DeleteObject(int id) -> void;
+
 	SceGxmContextParams 		contextParams;
 	SceGxmRenderTarget*			renderTarget = NULL;
 	void*						displayBufferData[DISPLAY_BUFFER_COUNT];
@@ -65,12 +79,6 @@ public:
 
 	unsigned int backBufferIndex = 0;
 	unsigned int frontBufferIndex = 0;
-
-	Vector3F*	cubeVertices = nullptr;
-	//Vector3*	cubeVertices = nullptr;
-	SceUID		cubeVerticesUID;
-	uint16_t*	cubeIndices = nullptr;
-	SceUID		cubeIndicesUID;
 
 	auto	operator = (const Vita3DGraphicHandler&)->Vita3DGraphicHandler& = delete;
 	auto	operator = (Vita3DGraphicHandler&&)->Vita3DGraphicHandler& = delete;

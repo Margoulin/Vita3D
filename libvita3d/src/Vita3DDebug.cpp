@@ -11,6 +11,8 @@ auto	Vita3DDebug::Print(const char* dataToWrite) -> void
 	sceIoLseek(fileId, 0, SCE_SEEK_END);
 	size_t size = strlen(dataToWrite);
 	sceIoWrite(fileId, dataToWrite, (SceSize)size);
+	char ret = '\n';
+	sceIoWrite(fileId, &ret, 1);
 	sceIoClose(fileId);
 }
 
@@ -22,6 +24,8 @@ auto	Vita3DDebug::Print(const char* filePath, const char* dataToWrite) -> void
 	sceIoLseek(fileId, 0, SCE_SEEK_END);
 	size_t size = strlen(dataToWrite);
 	sceIoWrite(fileId, dataToWrite, (SceSize)size);
+	char ret = '\n';
+	sceIoWrite(fileId, &ret, 1);
 	sceIoClose(fileId);
 }
 
@@ -33,6 +37,8 @@ auto	Vita3DDebug::Print(std::string const& dataToWrite) -> void
 		return;
 	sceIoLseek(fileId, 0, SCE_SEEK_END);
 	sceIoWrite(fileId, dataToWrite.c_str(), (SceSize)dataToWrite.length());
+	char ret = '\n';
+	sceIoWrite(fileId, &ret, 1);
 	sceIoClose(fileId);
 }
 
@@ -43,5 +49,7 @@ auto	Vita3DDebug::Print(std::string const& filePath, std::string const& dataToWr
 		return;
 	sceIoLseek(fileId, 0, SCE_SEEK_END);
 	sceIoWrite(fileId, dataToWrite.c_str(), (SceSize)dataToWrite.length());
+	char ret = '\n';
+	sceIoWrite(fileId, &ret, 1);
 	sceIoClose(fileId);
 }

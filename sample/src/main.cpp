@@ -14,10 +14,11 @@ int main()
 	
 	Vita3D::SetCameraPos(0.0f, 0.0f, -2.0f);
 	
-	//vita3d_obj* obj = load_obj_from_file("app0:Resources/Sphere.obj");
-
+	int objID = Vita3D::LoadObject("app0:Resources/Sherlock.obj");
+	Vita3D::UploadObjectInVRAM(objID);
+	
 	Transform	firstCubeTransform;
-	firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
+	//firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
 	
 	Vector3F firstCubePos;
 	Vector3F firstCubeScale(1.0f, 1.0f, 1.0f);
@@ -55,8 +56,9 @@ int main()
 		Vita3D::ClearScreen();
 		//if (obj->loaded)
 		//	vita3d_draw_custom_object(obj, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, RGBA8(255, 0, 0, 255), 0.0f);
-		Vita3D::DrawCube(firstCubeTransform, RGBA8(255, 0, 0, 255));
-		Vita3D::DrawCube(secondCubePos, secondCubeScale, RGBA8(0, 0, 255, 255));
+		//Vita3D::DrawCube(firstCubeTransform, RGBA8(255, 0, 0, 255));
+		//Vita3D::DrawCube(secondCubePos, secondCubeScale, RGBA8(0, 0, 255, 255));
+		Vita3D::DrawObject(objID, firstCubeTransform, RGBA8(0, 0, 255, 255));
 		
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();

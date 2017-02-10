@@ -4,6 +4,26 @@
 
 Vita3DGraphicHandler*	Vita3DGraphicHandler::Instance = nullptr;
 bool					Vita3D::Initialized = false;
+	
+auto	Vita3D::LoadObject(std::string const& filename) -> int
+{
+	return Vita3DGraphicHandler::Instance->LoadObject(filename);
+}
+
+auto	Vita3D::UploadObjectInVRAM(int id) -> void
+{
+	Vita3DGraphicHandler::Instance->UploadObjectInVRAM(id);
+}
+
+auto	Vita3D::DeleteObjectInVRAM(int id) -> void
+{
+	Vita3DGraphicHandler::Instance->DeleteObjectInVRAM(id);
+}
+
+auto	Vita3D::DeleteObject(int id) -> void
+{
+	Vita3DGraphicHandler::Instance->DeleteObject(id);
+}
 
 auto Vita3D::Initialize() -> void
 {

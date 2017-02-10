@@ -41,6 +41,12 @@ public:
 
 	static bool	Initialized;
 
+	static auto		LoadObject(std::string const& filename) -> int;
+	static auto		UploadObjectInVRAM(int id) -> void;
+	static auto		DeleteObjectInVRAM(int id) -> void;
+	static auto		DrawObject(int id, Transform const& transform, unsigned int color) -> void;
+	static auto		DeleteObject(int id) -> void;
+
 	static	auto	DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
 	static	auto	DrawCube(Vector3F position, Vector3F scale, unsigned int color) -> void;
 	static	auto	DrawCube(Transform const& transform, unsigned int color) -> void;

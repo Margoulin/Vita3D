@@ -15,7 +15,7 @@ extern SceGxmProgram _binary_shaders_object_f_gxp_start;
 
 static const SceGxmProgram *const 	clearVertexProgramGxp = &_binary_shaders_clear_v_gxp_start;
 static const SceGxmProgram *const 	clearFragmentProgramGxp = &_binary_shaders_clear_f_gxp_start;
-static const SceGxmProgram	 *const 	objectVertexProgramGxp = &_binary_shaders_object_v_gxp_start;
+static const SceGxmProgram *const objectVertexProgramGxp = &_binary_shaders_object_v_gxp_start;
 static const SceGxmProgram *const 	objectFragmentProgramGxp = &_binary_shaders_object_f_gxp_start;
 
 static void *patcher_host_alloc(void *user_data, unsigned int size)
