@@ -5,16 +5,16 @@
 
 int main()
 {
-	
 	Vita3D::Initialize();
-	
+
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
 	SceCtrlData pad;
 	memset(&pad, 0, sizeof(pad));
 	
 	Vita3D::SetCameraPos(0.0f, 0.0f, -2.0f);
+
+	int objID = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
 	
-	int objID = Vita3D::LoadObject("app0:Resources/Sherlock.obj");
 	Vita3D::UploadObjectInVRAM(objID);
 	
 	Transform	firstCubeTransform;
@@ -54,10 +54,7 @@ int main()
 	
 		Vita3D::BeginDrawing();
 		Vita3D::ClearScreen();
-		//if (obj->loaded)
-		//	vita3d_draw_custom_object(obj, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, RGBA8(255, 0, 0, 255), 0.0f);
-		//Vita3D::DrawCube(firstCubeTransform, RGBA8(255, 0, 0, 255));
-		//Vita3D::DrawCube(secondCubePos, secondCubeScale, RGBA8(0, 0, 255, 255));
+
 		Vita3D::DrawObject(objID, firstCubeTransform, RGBA8(0, 0, 255, 255));
 		
 		Vita3D::EndDrawing();

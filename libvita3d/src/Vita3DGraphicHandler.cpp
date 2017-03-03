@@ -10,6 +10,9 @@
 
 #include "utils.h"
 
+#include "SerializeObj.hpp"
+#include <fstream>
+
 typedef struct vita3d_display_data {
 	void *address;
 } vita3d_display_data;
@@ -369,16 +372,19 @@ auto	Vita3DGraphicHandler::LoadObject(std::string const& filename) -> int
 	Vita3DObj* obj = new Vita3DObj();
 	obj->LoadFromFile(filename);
 	if (obj->loaded)
-	{
-		objNbr++;
-		customObjects.insert(std::make_pair(objNbr, obj));
-		return objNbr;
-	}
+		return AddObject(obj);
 	else
 	{
 		obj->Shutdown();
 		return -1;
 	}
+}
+
+auto	Vita3DGraphicHandler::AddObject(Vita3DObj* obj) -> int
+{
+	objNbr++;
+	customObjects.insert(std::make_pair(objNbr, obj));
+	return objNbr;
 }
 
 auto	Vita3DGraphicHandler::UploadObjectInVRAM(int id) -> void
@@ -411,4 +417,91 @@ auto	Vita3DGraphicHandler::DeleteObject(int id) -> void
 		delete it->second;
 		customObjects.erase(it);
 	}
+}
+
+auto	Vita3DGraphicHandler::SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void
+{
+	Vita3DObj* obj = customObjects[ObjID];
+	if (!obj)
+		return;
+
+	SerializeObj sObj;
+	sObj.Name = obj->filename;
+
+	for (auto&& mesh : obj->meshes)
+	{
+		SerializeObj::SMesh	sMesh;
+		sMesh.Vertices = mesh->Vertices;
+		sMesh.Normals = mesh->Normals;
+		sMesh.UV = mesh->UV;
+		sMesh.Indices = mesh->Indices;
+
+		Material* mat = customMaterials[mesh->MaterialID];
+		if (mesh->MaterialID == 0)
+			sMesh.IsDefaultMaterial = true;
+
+		SerializeObj::SMaterial sMat;
+		sMat.Ambient = mat->Ambient;
+		sMat.Diffuse = mat->Diffuse;
+		sMat.Specular = mat->Specular;
+		sMat.Shininess = mat->Shininess;
+		sMat.Name = mat->Name;
+		sMesh.Material = sMat;
+		sObj.meshes.push_back(sMesh);
+	}
+
+	std::string file = "ux0:" + newFilename + ".bo";
+	std::ofstream ofs(file, std::ios::out | std::ios::trunc);
+	if (ofs.is_open()) 
+	{
+		cereal::BinaryOutputArchive oarchive(ofs);
+		oarchive(sObj);
+		ofs.close();
+	}
+}
+
+auto	Vita3DGraphicHandler::LoadObjectBinaryFile(std::string const& filename) -> int
+{
+	std::ifstream ifs(filename, std::ios::in);
+	
+	SerializeObj sObj;
+	
+	if (ifs.is_open())
+	{
+		cereal::BinaryInputArchive iarchive(ifs);
+		iarchive(sObj);
+		ifs.close();
+	}
+	else
+		return -1;
+
+	Vita3DObj*	obj = new Vita3DObj();
+	obj->filename = sObj.Name;
+
+	for (auto&& mesh : sObj.meshes)
+	{
+		Mesh* nMesh = new Mesh();
+		nMesh->Vertices = mesh.Vertices;
+		nMesh->Normals = mesh.Normals;
+		nMesh->UV = mesh.UV;
+		nMesh->Indices = mesh.Indices;
+
+		if (!mesh.IsDefaultMaterial)
+		{
+			Material* nMat = new Material();
+			nMat->Ambient = mesh.Material.Ambient;
+			nMat->Diffuse = mesh.Material.Diffuse;
+			nMat->Specular = mesh.Material.Specular;
+			nMat->Shininess = mesh.Material.Shininess;
+			nMat->Name = mesh.Material.Name;
+
+			nMesh->MaterialID = AddMaterial(nMat);
+		}
+		else
+			nMesh->MaterialID = 0;
+		obj->meshes.push_back(nMesh);
+	}
+
+	obj->loaded = true;
+	return AddObject(obj);
 }

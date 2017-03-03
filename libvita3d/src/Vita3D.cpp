@@ -10,6 +10,16 @@ auto	Vita3D::LoadObject(std::string const& filename) -> int
 	return Vita3DGraphicHandler::Instance->LoadObject(filename);
 }
 
+auto	Vita3D::LoadObjectBinary(std::string const& filename) -> int
+{
+	return Vita3DGraphicHandler::Instance->LoadObjectBinaryFile(filename);
+}
+
+auto	Vita3D::SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void
+{
+	Vita3DGraphicHandler::Instance->SaveObjectBinaryFile(ObjId, newFilename);
+}
+
 auto	Vita3D::UploadObjectInVRAM(int id) -> void
 {
 	Vita3DGraphicHandler::Instance->UploadObjectInVRAM(id);

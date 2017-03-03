@@ -42,6 +42,8 @@ public:
 	static bool	Initialized;
 
 	static auto		LoadObject(std::string const& filename) -> int;
+	static auto		LoadObjectBinary(std::string const& filename) -> int;
+	static auto		SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void;
 	static auto		UploadObjectInVRAM(int id) -> void;
 	static auto		DeleteObjectInVRAM(int id) -> void;
 	static auto		DrawObject(int id, Transform const& transform, unsigned int color) -> void;

@@ -58,11 +58,14 @@ public:
 	auto		AddMaterial(Material* mat) -> int;
 	auto		DeleteMaterial(int id) -> void;
 	
+	auto		AddObject(Vita3DObj* obj) -> int;
 	auto		LoadObject(std::string const& filename) -> int;
 	auto		UploadObjectInVRAM(int id) -> void;
 	auto		DeleteObjectInVRAM(int id) -> void;
 	auto		DrawObject(int id) -> void;
 	auto		DeleteObject(int id) -> void;
+	auto		SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void;
+	auto		LoadObjectBinaryFile(std::string const& filename) -> int;
 
 	SceGxmContextParams 		contextParams;
 	SceGxmRenderTarget*			renderTarget = NULL;

@@ -26,6 +26,7 @@ public:
 	std::vector<Mesh*>	meshes;
 	
 	std::string	filename;
+
 	bool		loaded = false;
 	bool		inVRAM = false;
 };
