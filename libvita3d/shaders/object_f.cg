@@ -1,4 +1,15 @@
+struct material
+{
+	float3	ambient;
+	float3	diffuse;
+	float3	specular;
+	float	shininess;
+};
+
+uniform material	u_material;
+
 float4 main(float4 outColor : COLOR) : COLOR
 {
-	return outColor;
+	float3 m = (u_material.ambient + u_material.diffuse + u_material.specular);
+	return float4(m, 1.0f);
 }

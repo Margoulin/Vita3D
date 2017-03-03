@@ -31,6 +31,7 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add sce_sys/livearea/contents/startup.png=sce_sys/livearea/contents/startup.png \
 		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
 		--add Resources/Sherlock.obj=Resources/Sherlock.obj \
+		--add Resources/Sherlock.mtl=Resources/Sherlock.mtl		\
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

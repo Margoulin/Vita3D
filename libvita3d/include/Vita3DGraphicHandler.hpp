@@ -9,6 +9,7 @@
 #include "Vita3DMath/Vector.hpp"
 
 #include "Vita3DObj.hpp"
+#include "Material.hpp"
 
 #define DISPLAY_WIDTH			960
 #define DISPLAY_HEIGHT			544
@@ -48,10 +49,15 @@ public:
 	ShaderManager				shaderManager;
 
 	std::map<int, Vita3DObj*>	customObjects;
+	std::map<int, Material*>	customMaterials;
 	int	objNbr = 0;
+	int matNbr = 0;
 
 	Vita3DObj	Primitives[3];
 
+	auto		AddMaterial(Material* mat) -> int;
+	auto		DeleteMaterial(int id) -> void;
+	
 	auto		LoadObject(std::string const& filename) -> int;
 	auto		UploadObjectInVRAM(int id) -> void;
 	auto		DeleteObjectInVRAM(int id) -> void;

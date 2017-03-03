@@ -224,6 +224,12 @@ auto	Vita3DGraphicHandler::Initialize() -> void
 	Primitives[0].meshes.push_back(tempMesh);
 	Primitives[0].loaded = true;
 	Primitives[0].UploadInVRAM();
+
+	Material* mat = new Material();
+	mat->Ambient = Vector3F(1.0f, 1.0f, 1.0f);
+	mat->Diffuse = Vector3F(1.0f, 1.0f, 1.0f);
+	mat->Specular = Vector3F(1.0f, 1.0f, 1.0f);
+	customMaterials.insert(std::make_pair(0, mat));
 }
 
 auto	Vita3DGraphicHandler::Shutdown() -> void
@@ -260,9 +266,16 @@ auto	Vita3DGraphicHandler::Shutdown() -> void
 	Primitives[0].Shutdown();
 
 	for (auto&& obj : customObjects)
+	{
 		obj.second->Shutdown();
+		delete obj.second;
+	}
 	customObjects.clear();
 
+	for (auto&& mat : customMaterials)
+		delete mat.second;
+	customMaterials.clear();
+	
 	sceGxmTerminate();
 }
 
@@ -332,6 +345,23 @@ auto	Vita3DGraphicHandler::SetClearColor(unsigned int color) -> void
 auto	Vita3DGraphicHandler::SetRegionClip(SceGxmRegionClipMode mode, unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max) -> void
 {
 	sceGxmSetRegionClip(_vita3d_context, mode, x_min, y_min, x_max, y_max);
+}
+
+auto	Vita3DGraphicHandler::AddMaterial(Material* mat) -> int
+{
+	matNbr++;
+	customMaterials.insert(std::make_pair(matNbr, mat));
+	return matNbr;
+}
+
+auto	Vita3DGraphicHandler::DeleteMaterial(int id) -> void
+{
+	auto it = customMaterials.find(id);
+	if (it != customMaterials.end())
+	{
+		delete it->second;
+		customMaterials.erase(it);
+	}
 }
 
 auto	Vita3DGraphicHandler::LoadObject(std::string const& filename) -> int

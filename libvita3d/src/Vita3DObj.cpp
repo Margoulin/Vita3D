@@ -3,6 +3,10 @@
 #include "utils.h"
 #include "tiny_obj_loader.h"
 
+#include "Material.hpp"
+
+#include "Vita3DGraphicHandler.hpp"
+
 #include "Vita3DDebug.hpp"
 
 auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
@@ -14,20 +18,47 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 	std::vector<tinyobj::shape_t>		shapes;
 	std::vector<tinyobj::material_t>	materials;
 	
-	if (tinyobj::LoadObj(&attrib, &shapes, &materials, &err, name.c_str()) == false)
+	if (tinyobj::LoadObj(&attrib, &shapes, &materials, &err, name.c_str(), "app0:Resources/") == false)
 		return;
 
-	for (size_t s = 0; s < shapes.size(); s++)
-	{
-		Mesh* mesh = new Mesh();
+	Mesh* defaultMesh = nullptr;
 
+	for (auto&& mat : materials)
+	{
+		Material* newMaterial = new Material();
+		
+		newMaterial->Ambient = Vector3F(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
+		newMaterial->Diffuse = Vector3F(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
+		newMaterial->Specular = Vector3F(mat.specular[0], mat.specular[1], mat.specular[2]);
+		newMaterial->Shininess = mat.shininess;
+		newMaterial->Name = mat.name;
+
+		Mesh* mesh = new Mesh();
+		mesh->MaterialID = Vita3DGraphicHandler::Instance->AddMaterial(newMaterial);
+		meshes.push_back(mesh);
+	}
+
+	for (auto&& shape : shapes)
+	{
 		size_t index_offset = 0;
-		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+		for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++)
 		{
-			int fv = shapes[s].mesh.num_face_vertices[f];
+			int currentMaterialID = shape.mesh.material_ids[f];
+
+			Mesh* currentMesh = nullptr;
+			if (currentMaterialID < 0 || currentMaterialID >= meshes.size())
+			{
+				if (!defaultMesh)
+					defaultMesh = new Mesh();
+				currentMesh = defaultMesh;
+			}
+			else
+				currentMesh = meshes[currentMaterialID];
+
+			int fv = shape.mesh.num_face_vertices[f];
 			for (size_t v = 0; v < fv; v++)
 			{
-				tinyobj::index_t	idx = shapes[s].mesh.indices[index_offset + v];
+				tinyobj::index_t	idx = shape.mesh.indices[index_offset + v];
 				float vx = attrib.vertices[3 * idx.vertex_index + 0];
 				float vy = attrib.vertices[3 * idx.vertex_index + 1];
 				float vz = attrib.vertices[3 * idx.vertex_index + 2];
@@ -37,14 +68,17 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 				float tx = attrib.texcoords[2 * idx.texcoord_index + 0];
 				float ty = attrib.texcoords[2 * idx.texcoord_index + 1];
 
-				mesh->Normals.push_back(Vector3F(nx, ny, nz));
-				mesh->Vertices.push_back(Vector3F(vx, vy, vz));
-				mesh->UV.push_back(Vector2F(tx, 1 - ty));
+				currentMesh->Normals.push_back(Vector3F(nx, ny, nz));
+				currentMesh->Vertices.push_back(Vector3F(vx, vy, vz));
+				currentMesh->UV.push_back(Vector2F(tx, 1 - ty));
 			}
 			index_offset += fv;
 		}
-		meshes.push_back(mesh);
 	}
+
+	if (defaultMesh)
+		meshes.push_back(defaultMesh);
+
 	loaded = true;
 	return;
 }

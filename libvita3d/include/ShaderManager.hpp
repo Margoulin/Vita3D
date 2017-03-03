@@ -47,7 +47,11 @@ public:
 	
 	const SceGxmProgramParameter *_vita3d_clearClearColorParam = nullptr;
 	const SceGxmProgramParameter *_vita3d_objectMvpParam = nullptr;
-
+	const SceGxmProgramParameter*	materialAmbient = nullptr;
+	const SceGxmProgramParameter*	materialDiffuse = nullptr;
+	const SceGxmProgramParameter*	materialSpecular = nullptr;
+	const SceGxmProgramParameter*	materialShininess = nullptr;
+	
 	auto	operator = (const ShaderManager&)->ShaderManager& = delete;
 	auto	operator = (ShaderManager&&)->ShaderManager& = delete;
 

@@ -182,6 +182,10 @@ auto	ShaderManager::Initialize() -> void
 
 	_vita3d_clearClearColorParam = sceGxmProgramFindParameterByName(clearFragmentProgramGxp, "uClearColor");
 	_vita3d_objectMvpParam = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "u_mvp_matrix");
+	materialAmbient = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.ambient");
+	materialDiffuse = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.diffuse");
+	materialSpecular = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.specular");
+	materialShininess = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.shininess");
 }
 
 auto	ShaderManager::Shutdown() -> void

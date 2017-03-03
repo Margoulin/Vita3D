@@ -28,6 +28,8 @@ public:
 	Vector3F*				GPUVertices = nullptr;
 	uint16_t*				GPUIndices = nullptr;
 
+	int						MaterialID = 0;
+
 	SceUID					VerticesID;
 	SceUID					IndicesID;
 };

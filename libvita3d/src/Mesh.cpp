@@ -7,6 +7,11 @@
 auto	Mesh::Draw() -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
+
+	Material* mat = handler->customMaterials[MaterialID];
+	if (mat)
+		mat->Bind();
+
 	sceGxmSetVertexStream(handler->_vita3d_context, 0, GPUVertices);
 	sceGxmDraw(handler->_vita3d_context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, GPUIndices, Indices.size());
 }
