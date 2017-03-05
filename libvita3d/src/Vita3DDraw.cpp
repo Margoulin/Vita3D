@@ -5,7 +5,7 @@
 #include "Vita3DMath/Transform.hpp"
 #include "Vita3DMath/Matrix.hpp"
 
-#include "Vita3DDebug.hpp"
+#include "ResourcesManager.hpp"
 
 Vector3F cameraPos;
 
@@ -31,16 +31,16 @@ auto Vita3D::DrawCube(Transform const& transform, unsigned int color) -> void
 	Matrix4x4F	finalMat = Matrix4x4F::Mult(proj, Matrix4x4F::Mult(view, transform.GetLocalMatrix()));
 
 	SceGxmCullMode cull = SCE_GXM_CULL_CW;
-	sceGxmSetCullMode(handler->_vita3d_context, cull);
+	sceGxmSetCullMode(handler->GetContext(), cull);
 	
-	sceGxmSetVertexProgram(handler->_vita3d_context, handler->shaderManager._vita3d_objectVertexProgram);
-	sceGxmSetFragmentProgram(handler->_vita3d_context, handler->shaderManager._vita3d_objectFragmentProgram);
+	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager._vita3d_objectVertexProgram);
+	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager._vita3d_objectFragmentProgram);
 	
 	void *vertexDefaultBuffer;
-	sceGxmReserveVertexDefaultUniformBuffer(handler->_vita3d_context, &vertexDefaultBuffer);
+	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
 	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, finalMat.GetArray());
 
-	handler->Primitives[0].Draw();
+	ResourcesManager::Instance->DrawPrimitive(ResourcesManager::PRIMITIVE_TYPE::CUBE);
 }
 
 auto Vita3D::DrawObject(int obj, Transform const& transform, unsigned int color) -> void
@@ -53,16 +53,16 @@ auto Vita3D::DrawObject(int obj, Transform const& transform, unsigned int color)
 	Matrix4x4F	finalMat = Matrix4x4F::Mult(proj, Matrix4x4F::Mult(view, transform.GetLocalMatrix()));
 
 	SceGxmCullMode cull = SCE_GXM_CULL_CW;
-	sceGxmSetCullMode(handler->_vita3d_context, cull);
+	sceGxmSetCullMode(handler->GetContext(), cull);
 
-	sceGxmSetVertexProgram(handler->_vita3d_context, handler->shaderManager._vita3d_objectVertexProgram);
-	sceGxmSetFragmentProgram(handler->_vita3d_context, handler->shaderManager._vita3d_objectFragmentProgram);
+	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager._vita3d_objectVertexProgram);
+	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager._vita3d_objectFragmentProgram);
 
 	void *vertexDefaultBuffer;
-	sceGxmReserveVertexDefaultUniformBuffer(handler->_vita3d_context, &vertexDefaultBuffer);
+	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
 	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, finalMat.GetArray());
 
-	handler->DrawObject(obj);
+	ResourcesManager::Instance->DrawObject(obj);
 }
 
 auto Vita3D::DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void

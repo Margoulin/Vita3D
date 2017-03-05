@@ -1,38 +1,39 @@
 #include "Vita3D.hpp"
 
 #include "Vita3DGraphicHandler.hpp"
+#include "ResourcesManager.hpp"
 
 Vita3DGraphicHandler*	Vita3DGraphicHandler::Instance = nullptr;
 bool					Vita3D::Initialized = false;
 	
 auto	Vita3D::LoadObject(std::string const& filename) -> int
 {
-	return Vita3DGraphicHandler::Instance->LoadObject(filename);
+	return ResourcesManager::Instance->LoadObject(filename);
 }
 
 auto	Vita3D::LoadObjectBinary(std::string const& filename) -> int
 {
-	return Vita3DGraphicHandler::Instance->LoadObjectBinaryFile(filename);
+	return ResourcesManager::Instance->LoadObjectBinaryFile(filename);
 }
 
 auto	Vita3D::SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void
 {
-	Vita3DGraphicHandler::Instance->SaveObjectBinaryFile(ObjId, newFilename);
+	ResourcesManager::Instance->SaveObjectBinaryFile(ObjId, newFilename);
 }
 
 auto	Vita3D::UploadObjectInVRAM(int id) -> void
 {
-	Vita3DGraphicHandler::Instance->UploadObjectInVRAM(id);
+	ResourcesManager::Instance->UploadObjectInVRAM(id);
 }
 
 auto	Vita3D::DeleteObjectInVRAM(int id) -> void
 {
-	Vita3DGraphicHandler::Instance->DeleteObjectInVRAM(id);
+	ResourcesManager::Instance->DeleteObjectInVRAM(id);
 }
 
 auto	Vita3D::DeleteObject(int id) -> void
 {
-	Vita3DGraphicHandler::Instance->DeleteObject(id);
+	ResourcesManager::Instance->DeleteObject(id);
 }
 
 auto Vita3D::Initialize() -> void
@@ -41,14 +42,28 @@ auto Vita3D::Initialize() -> void
 		Vita3DGraphicHandler::Instance = new Vita3DGraphicHandler();
 	
 	Vita3DGraphicHandler::Instance->Initialize();
-	
+
+	if (!ResourcesManager::Instance)
+		ResourcesManager::Instance = new ResourcesManager();
+	ResourcesManager::Instance->Initialize();
+
 	Vita3D::Initialized = true;
 }
 
 auto	Vita3D::Shutdown() -> void
 {
 	if (Vita3DGraphicHandler::Instance)
+	{
+		Vita3DGraphicHandler::Instance->Shutdown();
 		delete Vita3DGraphicHandler::Instance;
+	}
+
+	if (ResourcesManager::Instance)
+	{
+		ResourcesManager::Instance->Shutdown();
+		delete ResourcesManager::Instance;
+	}
+
 	Vita3D::Initialized = false;
 }
 

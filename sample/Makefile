@@ -57,3 +57,5 @@ out/%.o : src/%.cpp | $(OBJ_DIRS)
 clean:
 	rm -rf $(PROJECT).velf $(PROJECT).elf $(PROJECT).vpk param.sfo eboot.bin $(OBJS)
 	rm -rr $(abspath $(OBJ_DIRS))
+
+re: clean all

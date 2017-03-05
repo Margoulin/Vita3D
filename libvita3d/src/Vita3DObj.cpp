@@ -5,9 +5,7 @@
 
 #include "Material.hpp"
 
-#include "Vita3DGraphicHandler.hpp"
-
-#include "Vita3DDebug.hpp"
+#include "ResourcesManager.hpp"
 
 auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 {
@@ -34,7 +32,7 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 		newMaterial->Name = mat.name;
 
 		Mesh* mesh = new Mesh();
-		mesh->MaterialID = Vita3DGraphicHandler::Instance->AddMaterial(newMaterial);
+		mesh->MaterialID = ResourcesManager::Instance->AddMaterial(newMaterial);
 		meshes.push_back(mesh);
 	}
 

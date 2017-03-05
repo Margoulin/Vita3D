@@ -1,5 +1,8 @@
 #include <Vita3D.hpp>
+
 #include <psp2/ctrl.h>
+#include <psp2/kernel/processmgr.h>
+
 #include <stdio.h>
 #include <string.h>
 
@@ -24,8 +27,10 @@ int main()
 	Vector3F firstCubeScale(1.0f, 1.0f, 1.0f);
 	Vector3F secondCubePos(0.75f, 0.0f, 0.0f);
 	Vector3F secondCubeScale(0.5f, 0.5f, 0.5f);
-	
-	while(true)
+
+	bool run = true;
+
+	while(run)
 	{
 		sceCtrlPeekBufferPositive(0, &pad, 1);
 		
@@ -39,7 +44,9 @@ int main()
 			Vita3D::SetCameraPos(pos->x, pos->y, pos->z + 0.15f);
 		if (pad.buttons == SCE_CTRL_DOWN)
 			Vita3D::SetCameraPos(pos->x, pos->y, pos->z - 0.15f);
-		
+		if (pad.buttons == SCE_CTRL_SELECT)
+			run = false;
+
 		int stickLX = pad.lx - 128;
 		int stickLY = pad.ly - 128;
 		
@@ -63,5 +70,7 @@ int main()
 	
 	Vita3D::Shutdown();
 	
+	sceKernelExitProcess(0);
+
 	return 0;
 }

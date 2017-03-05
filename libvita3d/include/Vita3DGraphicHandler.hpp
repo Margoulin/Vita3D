@@ -2,7 +2,6 @@
 #define __VITA3DGRAPHICHANDLER_HPP__
 
 #include <psp2/gxm.h>
-#include <map>
 
 #include "ShaderManager.hpp"
 
@@ -33,10 +32,12 @@ public:
 	auto Initialize() -> void;
 	auto Shutdown() -> void;
 	
-	auto	BeginDrawing() -> void;
-	auto	EndDrawing() -> void { sceGxmEndScene(_vita3d_context, NULL, NULL); }
+	auto	GetContext() const -> SceGxmContext* { return context; }
 
-	auto	WaitRenderingDone() -> void { sceGxmFinish(_vita3d_context); }
+	auto	BeginDrawing() -> void;
+	auto	EndDrawing() -> void { sceGxmEndScene(context, nullptr, nullptr); }
+
+	auto	WaitRenderingDone() -> void { sceGxmFinish(context); }
 	auto	ClearScreen() -> void;
 	auto	SwapBuffers() -> void;
 
@@ -47,25 +48,6 @@ public:
 	auto	SetRegionClip(SceGxmRegionClipMode mode, unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max) -> void;
 
 	ShaderManager				shaderManager;
-
-	std::map<int, Vita3DObj*>	customObjects;
-	std::map<int, Material*>	customMaterials;
-	int	objNbr = 0;
-	int matNbr = 0;
-
-	Vita3DObj	Primitives[3];
-
-	auto		AddMaterial(Material* mat) -> int;
-	auto		DeleteMaterial(int id) -> void;
-	
-	auto		AddObject(Vita3DObj* obj) -> int;
-	auto		LoadObject(std::string const& filename) -> int;
-	auto		UploadObjectInVRAM(int id) -> void;
-	auto		DeleteObjectInVRAM(int id) -> void;
-	auto		DrawObject(int id) -> void;
-	auto		DeleteObject(int id) -> void;
-	auto		SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void;
-	auto		LoadObjectBinaryFile(std::string const& filename) -> int;
 
 	SceGxmContextParams 		contextParams;
 	SceGxmRenderTarget*			renderTarget = NULL;
@@ -82,7 +64,6 @@ public:
 	SceUID fragmentRingBufferUid;
 	SceUID fragmentUsseRingBufferUid;
 	
-	SceGxmContext *_vita3d_context = NULL;
 	
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -95,7 +76,7 @@ public:
 protected:
 
 private:
-	
+	SceGxmContext*	context = nullptr;	
 
 };
 

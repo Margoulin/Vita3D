@@ -10,9 +10,6 @@
 
 #include "utils.h"
 
-#include "SerializeObj.hpp"
-#include <fstream>
-
 typedef struct vita3d_display_data {
 	void *address;
 } vita3d_display_data;
@@ -38,9 +35,8 @@ void display_callback(const void *callback_data)
 	framebuf.height = DISPLAY_HEIGHT;
 	sceDisplaySetFrameBuf(&framebuf, SCE_DISPLAY_SETBUF_NEXTFRAME);
 
-	if (vblank_wait) {
+	if (vblank_wait)
 		sceDisplayWaitVblankStart();
-	}
 }
 
 auto	Vita3DGraphicHandler::Initialize() -> void
@@ -95,7 +91,7 @@ auto	Vita3DGraphicHandler::Initialize() -> void
 	contextParams.fragmentUsseRingBufferMemSize = SCE_GXM_DEFAULT_FRAGMENT_USSE_RING_BUFFER_SIZE;
 	contextParams.fragmentUsseRingBufferOffset = fragmentUsseRingBufferOffset;
 
-	sceGxmCreateContext(&contextParams, &_vita3d_context);
+	sceGxmCreateContext(&contextParams, &context);
 
 	SceGxmRenderTargetParams renderTargetParams;
 	memset(&renderTargetParams, 0, sizeof(SceGxmRenderTargetParams));
@@ -172,72 +168,11 @@ auto	Vita3DGraphicHandler::Initialize() -> void
 
 	backBufferIndex = 0;
 	frontBufferIndex = 0;
-
-	Mesh* tempMesh = new Mesh();
-	tempMesh->Vertices.push_back(Vector3F(-0.5f, -0.5f, 0.5f));
-	tempMesh->Vertices.push_back(Vector3F(0.5f, -0.5f, 0.5f));
-	tempMesh->Vertices.push_back(Vector3F(0.5f, 0.5f, 0.5f));
-	tempMesh->Vertices.push_back(Vector3F(-0.5f, 0.5f, 0.5f));
-	tempMesh->Vertices.push_back(Vector3F(-0.5f, -0.5f, -0.5f));
-	tempMesh->Vertices.push_back(Vector3F(0.5f, -0.5f, -0.5f));
-	tempMesh->Vertices.push_back(Vector3F(0.5f, 0.5f, -0.5f));
-	tempMesh->Vertices.push_back(Vector3F(-0.5f, 0.5f, -0.5f));
-
-	tempMesh->Indices.push_back(0);
-	tempMesh->Indices.push_back(1);
-	tempMesh->Indices.push_back(2);
-	tempMesh->Indices.push_back(2);
-	tempMesh->Indices.push_back(3);
-	tempMesh->Indices.push_back(0);
-
-	tempMesh->Indices.push_back(1);
-	tempMesh->Indices.push_back(5);
-	tempMesh->Indices.push_back(6);
-	tempMesh->Indices.push_back(6);
-	tempMesh->Indices.push_back(2);
-	tempMesh->Indices.push_back(1);
-
-	tempMesh->Indices.push_back(7);
-	tempMesh->Indices.push_back(6);
-	tempMesh->Indices.push_back(5);
-	tempMesh->Indices.push_back(5);
-	tempMesh->Indices.push_back(4);
-	tempMesh->Indices.push_back(7);
-
-	tempMesh->Indices.push_back(4);
-	tempMesh->Indices.push_back(0);
-	tempMesh->Indices.push_back(3);
-	tempMesh->Indices.push_back(3);
-	tempMesh->Indices.push_back(7);
-	tempMesh->Indices.push_back(4);
-
-	tempMesh->Indices.push_back(4);
-	tempMesh->Indices.push_back(5);
-	tempMesh->Indices.push_back(1);
-	tempMesh->Indices.push_back(1);
-	tempMesh->Indices.push_back(0);
-	tempMesh->Indices.push_back(4);
-
-	tempMesh->Indices.push_back(3);
-	tempMesh->Indices.push_back(2);
-	tempMesh->Indices.push_back(6);
-	tempMesh->Indices.push_back(6);
-	tempMesh->Indices.push_back(7);
-	tempMesh->Indices.push_back(3);
-	Primitives[0].meshes.push_back(tempMesh);
-	Primitives[0].loaded = true;
-	Primitives[0].UploadInVRAM();
-
-	Material* mat = new Material();
-	mat->Ambient = Vector3F(1.0f, 1.0f, 1.0f);
-	mat->Diffuse = Vector3F(1.0f, 1.0f, 1.0f);
-	mat->Specular = Vector3F(1.0f, 1.0f, 1.0f);
-	customMaterials.insert(std::make_pair(0, mat));
 }
 
 auto	Vita3DGraphicHandler::Shutdown() -> void
 {
-	sceGxmFinish(_vita3d_context);
+	sceGxmFinish(context);
 
 	shaderManager.ReleaseShaders();
 
@@ -258,7 +193,7 @@ auto	Vita3DGraphicHandler::Shutdown() -> void
 
 	sceGxmDestroyRenderTarget(renderTarget);
 
-	sceGxmDestroyContext(_vita3d_context);
+	sceGxmDestroyContext(context);
 
 	fragment_usse_free(fragmentUsseRingBufferUid);
 	gpu_free(fragmentRingBufferUid);
@@ -266,41 +201,28 @@ auto	Vita3DGraphicHandler::Shutdown() -> void
 	gpu_free(vdmRingBufferUid);
 	free(contextParams.hostMem);
 
-	Primitives[0].Shutdown();
-
-	for (auto&& obj : customObjects)
-	{
-		obj.second->Shutdown();
-		delete obj.second;
-	}
-	customObjects.clear();
-
-	for (auto&& mat : customMaterials)
-		delete mat.second;
-	customMaterials.clear();
-	
 	sceGxmTerminate();
 }
 
 auto	Vita3DGraphicHandler::BeginDrawing() -> void
 {
-	sceGxmBeginScene(_vita3d_context, 0, renderTarget, NULL, NULL,
+	sceGxmBeginScene(context, 0, renderTarget, NULL, NULL,
 		displayBufferSync[backBufferIndex], &(displaySurface[backBufferIndex]),
 		&depthSurface);
 }
 
 auto	Vita3DGraphicHandler::ClearScreen() -> void
 {
-	sceGxmSetVertexProgram(_vita3d_context, shaderManager.clearVertexProgram);
-	sceGxmSetFragmentProgram(_vita3d_context, shaderManager.clearFragmentProgram);
+	sceGxmSetVertexProgram(context, shaderManager.clearVertexProgram);
+	sceGxmSetFragmentProgram(context, shaderManager.clearFragmentProgram);
 
 	void *color_buffer;
-	sceGxmReserveFragmentDefaultUniformBuffer(_vita3d_context, &color_buffer);
+	sceGxmReserveFragmentDefaultUniformBuffer(context, &color_buffer);
 	sceGxmSetUniformDataF(color_buffer, shaderManager._vita3d_clearClearColorParam,
 		0, 4, clearColor);
 
-	sceGxmSetVertexStream(_vita3d_context, 0, shaderManager.clearVertices);
-	sceGxmDraw(_vita3d_context, SCE_GXM_PRIMITIVE_TRIANGLES,
+	sceGxmSetVertexStream(context, 0, shaderManager.clearVertices);
+	sceGxmDraw(context, SCE_GXM_PRIMITIVE_TRIANGLES,
 		SCE_GXM_INDEX_FORMAT_U16, shaderManager.clearIndices, 3);
 }
 
@@ -347,161 +269,5 @@ auto	Vita3DGraphicHandler::SetClearColor(unsigned int color) -> void
 
 auto	Vita3DGraphicHandler::SetRegionClip(SceGxmRegionClipMode mode, unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max) -> void
 {
-	sceGxmSetRegionClip(_vita3d_context, mode, x_min, y_min, x_max, y_max);
-}
-
-auto	Vita3DGraphicHandler::AddMaterial(Material* mat) -> int
-{
-	matNbr++;
-	customMaterials.insert(std::make_pair(matNbr, mat));
-	return matNbr;
-}
-
-auto	Vita3DGraphicHandler::DeleteMaterial(int id) -> void
-{
-	auto it = customMaterials.find(id);
-	if (it != customMaterials.end())
-	{
-		delete it->second;
-		customMaterials.erase(it);
-	}
-}
-
-auto	Vita3DGraphicHandler::LoadObject(std::string const& filename) -> int
-{
-	Vita3DObj* obj = new Vita3DObj();
-	obj->LoadFromFile(filename);
-	if (obj->loaded)
-		return AddObject(obj);
-	else
-	{
-		obj->Shutdown();
-		return -1;
-	}
-}
-
-auto	Vita3DGraphicHandler::AddObject(Vita3DObj* obj) -> int
-{
-	objNbr++;
-	customObjects.insert(std::make_pair(objNbr, obj));
-	return objNbr;
-}
-
-auto	Vita3DGraphicHandler::UploadObjectInVRAM(int id) -> void
-{
-	auto it = customObjects.find(id);
-	if (it != customObjects.end())
-		it->second->UploadInVRAM();
-}
-
-auto	Vita3DGraphicHandler::DeleteObjectInVRAM(int id) -> void
-{
-	auto it = customObjects.find(id);
-	if (it != customObjects.end())
-		it->second->DeleteFromVRAM();
-}
-
-auto	Vita3DGraphicHandler::DrawObject(int id) -> void
-{
-	auto it = customObjects.find(id);
-	if (it != customObjects.end())
-		it->second->Draw();
-}
-
-auto	Vita3DGraphicHandler::DeleteObject(int id) -> void
-{
-	auto it = customObjects.find(id);
-	if (it != customObjects.end())
-	{
-		it->second->Shutdown();
-		delete it->second;
-		customObjects.erase(it);
-	}
-}
-
-auto	Vita3DGraphicHandler::SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void
-{
-	Vita3DObj* obj = customObjects[ObjID];
-	if (!obj)
-		return;
-
-	SerializeObj sObj;
-	sObj.Name = obj->filename;
-
-	for (auto&& mesh : obj->meshes)
-	{
-		SerializeObj::SMesh	sMesh;
-		sMesh.Vertices = mesh->Vertices;
-		sMesh.Normals = mesh->Normals;
-		sMesh.UV = mesh->UV;
-		sMesh.Indices = mesh->Indices;
-
-		Material* mat = customMaterials[mesh->MaterialID];
-		if (mesh->MaterialID == 0)
-			sMesh.IsDefaultMaterial = true;
-
-		SerializeObj::SMaterial sMat;
-		sMat.Ambient = mat->Ambient;
-		sMat.Diffuse = mat->Diffuse;
-		sMat.Specular = mat->Specular;
-		sMat.Shininess = mat->Shininess;
-		sMat.Name = mat->Name;
-		sMesh.Material = sMat;
-		sObj.meshes.push_back(sMesh);
-	}
-
-	std::string file = "ux0:" + newFilename + ".bo";
-	std::ofstream ofs(file, std::ios::out | std::ios::trunc);
-	if (ofs.is_open()) 
-	{
-		cereal::BinaryOutputArchive oarchive(ofs);
-		oarchive(sObj);
-		ofs.close();
-	}
-}
-
-auto	Vita3DGraphicHandler::LoadObjectBinaryFile(std::string const& filename) -> int
-{
-	std::ifstream ifs(filename, std::ios::in);
-	
-	SerializeObj sObj;
-	
-	if (ifs.is_open())
-	{
-		cereal::BinaryInputArchive iarchive(ifs);
-		iarchive(sObj);
-		ifs.close();
-	}
-	else
-		return -1;
-
-	Vita3DObj*	obj = new Vita3DObj();
-	obj->filename = sObj.Name;
-
-	for (auto&& mesh : sObj.meshes)
-	{
-		Mesh* nMesh = new Mesh();
-		nMesh->Vertices = mesh.Vertices;
-		nMesh->Normals = mesh.Normals;
-		nMesh->UV = mesh.UV;
-		nMesh->Indices = mesh.Indices;
-
-		if (!mesh.IsDefaultMaterial)
-		{
-			Material* nMat = new Material();
-			nMat->Ambient = mesh.Material.Ambient;
-			nMat->Diffuse = mesh.Material.Diffuse;
-			nMat->Specular = mesh.Material.Specular;
-			nMat->Shininess = mesh.Material.Shininess;
-			nMat->Name = mesh.Material.Name;
-
-			nMesh->MaterialID = AddMaterial(nMat);
-		}
-		else
-			nMesh->MaterialID = 0;
-		obj->meshes.push_back(nMesh);
-	}
-
-	obj->loaded = true;
-	return AddObject(obj);
+	sceGxmSetRegionClip(context, mode, x_min, y_min, x_max, y_max);
 }
