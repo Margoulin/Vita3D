@@ -7,25 +7,21 @@
 
 #include "ResourcesManager.hpp"
 
-Vector3F cameraPos;
-
-auto	Vita3D::GetCameraPos() -> Vector3F*
+auto	Vita3D::GetCameraPos() -> Vector3F
 {
-	return &cameraPos;
+	return Vita3DGraphicHandler::Instance->GetCamera()->GetPosition();
 }
 
-auto	 Vita3D::SetCameraPos(float x, float y, float z) -> void
+auto	 Vita3D::SetCameraPos(Vector3F val) -> void
 {
-	cameraPos.x = x;
-	cameraPos.y = y;
-	cameraPos.z = z;
+	Vita3DGraphicHandler::Instance->GetCamera()->GetPosition() = val;
 }
 
-auto Vita3D::DrawCube(Transform const& transform, unsigned int color) -> void
+auto Vita3D::DrawCube(Transform const& transform, Vector3F color) -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 
-	Matrix4x4F	view = Matrix4x4F::LookAt(cameraPos, Vector3F::up, cameraPos + Vector3F::forward);
+	Matrix4x4F	view = handler->GetCamera()->GetViewMatrix();
 	Matrix4x4F	proj = Matrix4x4F::Perspective(0.78 * radToDeg, 16.0f / 9.0f, 0.1f, 100.0f);
 
 	Matrix4x4F	finalMat = Matrix4x4F::Mult(proj, Matrix4x4F::Mult(view, transform.GetLocalMatrix()));
@@ -43,11 +39,11 @@ auto Vita3D::DrawCube(Transform const& transform, unsigned int color) -> void
 	ResourcesManager::Instance->DrawPrimitive(ResourcesManager::PRIMITIVE_TYPE::CUBE);
 }
 
-auto Vita3D::DrawObject(int obj, Transform const& transform, unsigned int color) -> void
+auto Vita3D::DrawObject(int obj, Transform const& transform) -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 
-	Matrix4x4F	view = Matrix4x4F::LookAt(cameraPos, Vector3F::up, cameraPos + Vector3F::forward);
+	Matrix4x4F	view = handler->GetCamera()->GetViewMatrix();
 	Matrix4x4F	proj = Matrix4x4F::Perspective(0.78 * radToDeg, 16.0f / 9.0f, 0.1f, 100.0f);
 
 	Matrix4x4F	finalMat = Matrix4x4F::Mult(proj, Matrix4x4F::Mult(view, transform.GetLocalMatrix()));
@@ -65,12 +61,12 @@ auto Vita3D::DrawObject(int obj, Transform const& transform, unsigned int color)
 	ResourcesManager::Instance->DrawObject(obj);
 }
 
-auto Vita3D::DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void
+auto Vita3D::DrawCube(float x, float y, float z, float w, float h, float d, Vector3F color) -> void
 {
 	Vita3D::DrawCube(Vector3F(x, y, z), Vector3F(w, h, d), color);
 }
 
-auto Vita3D::DrawCube(Vector3F position, Vector3F scale, unsigned int color) -> void
+auto Vita3D::DrawCube(Vector3F position, Vector3F scale, Vector3F color) -> void
 {
 	Transform	tempTrans;
 	tempTrans.SetPosition(Vector3F(position.x, position.y, position.z));

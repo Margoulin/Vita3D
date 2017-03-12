@@ -14,7 +14,7 @@ int main()
 	SceCtrlData pad;
 	memset(&pad, 0, sizeof(pad));
 	
-	Vita3D::SetCameraPos(0.0f, 0.0f, -2.0f);
+	Vita3D::SetCameraPos(Vector3F(0.0f, 0.0f, -2.0f));
 
 	int objID = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
 	
@@ -28,41 +28,59 @@ int main()
 	Vector3F secondCubePos(0.75f, 0.0f, 0.0f);
 	Vector3F secondCubeScale(0.5f, 0.5f, 0.5f);
 
+	Transform	secondTrans;
+	secondTrans.SetPosition(secondCubePos);
+	
 	bool run = true;
 
 	while(run)
 	{
 		sceCtrlPeekBufferPositive(0, &pad, 1);
 		
-		Vector3F* pos = Vita3D::GetCameraPos();
-		
+		Vector3F	pos = Vita3D::GetCameraPos();
+		Vector3F	camOffset;
+
 		if (pad.buttons == SCE_CTRL_LEFT)
-			Vita3D::SetCameraPos(pos->x - 0.15f, pos->y, pos->z);
+			camOffset.x += 0.15f;
 		if (pad.buttons == SCE_CTRL_RIGHT)
-			Vita3D::SetCameraPos(pos->x + 0.15f, pos->y, pos->z);
+			camOffset.x -= 0.15f;
 		if (pad.buttons == SCE_CTRL_UP)
-			Vita3D::SetCameraPos(pos->x, pos->y, pos->z + 0.15f);
+			camOffset.z += 0.15f;
 		if (pad.buttons == SCE_CTRL_DOWN)
-			Vita3D::SetCameraPos(pos->x, pos->y, pos->z - 0.15f);
+			camOffset.z -= 0.15f;
 		if (pad.buttons == SCE_CTRL_SELECT)
 			run = false;
 
 		int stickLX = pad.lx - 128;
 		int stickLY = pad.ly - 128;
+		int stickRX = pad.rx - 128;
+		int stickRY = pad.ry - 128;
 		
 		if (stickLX <= -64)
-			Vita3D::SetCameraPos(pos->x - 0.15f, pos->y, pos->z);
+			camOffset.x += 0.15f;
 		else if (stickLX >= 64)
-			Vita3D::SetCameraPos(pos->x + 0.15f, pos->y, pos->z);
+			camOffset.x -= 0.15f;
 		if (stickLY <= -64)
-			Vita3D::SetCameraPos(pos->x, pos->y + 0.15f, pos->z);
-		if (stickLY >= 64)
-			Vita3D::SetCameraPos(pos->x, pos->y - 0.15f, pos->z);
-	
+			camOffset.z += 0.15f;
+		else if (stickLY >= 64)
+			camOffset.z -= 0.15f;
+
+		if (stickRX <= -64)
+			Vita3D::RotateCamera(Vector3F(0.0f, 1.0f * degToRad, 0.0f));
+		else if (stickRX >= 64)
+			Vita3D::RotateCamera(Vector3F(0.0f, -1.0f * degToRad, 0.0f));
+		if (stickRY <= -64)
+			Vita3D::RotateCamera(Vector3F(-1.0f * degToRad, 0.0f, 0.0f));
+		else if (stickRY >= 64)
+			Vita3D::RotateCamera(Vector3F(1.0f * degToRad, 0.0f, 0.0f));
+
+		Vita3D::SetCameraPos(pos + Vita3D::GetCameraRotation() * camOffset);
+
 		Vita3D::BeginDrawing();
 		Vita3D::ClearScreen();
 
-		Vita3D::DrawObject(objID, firstCubeTransform, RGBA8(0, 0, 255, 255));
+		Vita3D::DrawObject(objID, firstCubeTransform);
+		Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
 		
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();

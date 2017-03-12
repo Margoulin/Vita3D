@@ -36,8 +36,10 @@ public:
 	static	auto	GetCurrentFB() -> void*;
 	static	auto	SetRegionClip(SceGxmRegionClipMode mode, unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max) -> void;
 
-	static	auto	GetCameraPos() -> Vector3F*;
-	static	auto	SetCameraPos(float x, float y, float z) -> void;
+	static	auto	GetCameraPos() -> Vector3F;
+	static	auto	SetCameraPos(Vector3F val) -> void;
+	static	auto	GetCameraRotation() -> Quaternion&;
+	static	auto	RotateCamera(Vector3F const& val) -> void;
 
 	static bool	Initialized;
 
@@ -46,12 +48,12 @@ public:
 	static auto		SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void;
 	static auto		UploadObjectInVRAM(int id) -> void;
 	static auto		DeleteObjectInVRAM(int id) -> void;
-	static auto		DrawObject(int id, Transform const& transform, unsigned int color) -> void;
+	static auto		DrawObject(int id, Transform const& transform) -> void;
 	static auto		DeleteObject(int id) -> void;
 
-	static	auto	DrawCube(float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
-	static	auto	DrawCube(Vector3F position, Vector3F scale, unsigned int color) -> void;
-	static	auto	DrawCube(Transform const& transform, unsigned int color) -> void;
+	static	auto	DrawCube(float x, float y, float z, float w, float h, float d, Vector3F color) -> void;
+	static	auto	DrawCube(Vector3F position, Vector3F scale, Vector3F color) -> void;
+	static	auto	DrawCube(Transform const& transform, Vector3F color) -> void;
 	//static	auto	DrawObject(Vita3DObj* object, float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
 
 	auto	operator = (const Vita3D&)->Vita3D& = delete;

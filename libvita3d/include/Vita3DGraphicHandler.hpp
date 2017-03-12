@@ -10,6 +10,8 @@
 #include "Vita3DObj.hpp"
 #include "Material.hpp"
 
+#include "RenderCamera.hpp"
+
 #define DISPLAY_WIDTH			960
 #define DISPLAY_HEIGHT			544
 #define DISPLAY_STRIDE_IN_PIXELS	1024
@@ -33,6 +35,7 @@ public:
 	auto Shutdown() -> void;
 	
 	auto	GetContext() const -> SceGxmContext* { return context; }
+	auto	GetCamera() -> RenderCamera* { return &mainCamera; }
 
 	auto	BeginDrawing() -> void;
 	auto	EndDrawing() -> void { sceGxmEndScene(context, nullptr, nullptr); }
@@ -77,6 +80,7 @@ protected:
 
 private:
 	SceGxmContext*	context = nullptr;	
+	RenderCamera	mainCamera;
 
 };
 

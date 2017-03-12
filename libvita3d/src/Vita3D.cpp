@@ -116,3 +116,13 @@ auto	Vita3D::SetRegionClip(SceGxmRegionClipMode mode, unsigned int x_min, unsign
 {
 	Vita3DGraphicHandler::Instance->SetRegionClip(mode, x_min, y_min, x_max, y_max);
 }
+
+auto	Vita3D::GetCameraRotation() -> Quaternion&
+{
+	return Vita3DGraphicHandler::Instance->GetCamera()->GetRotation();
+}
+
+auto	Vita3D::RotateCamera(Vector3F const& val) -> void
+{
+	return Vita3DGraphicHandler::Instance->GetCamera()->Rotate(val);
+}
