@@ -16,7 +16,7 @@ public:
 
 	static auto Mult(const Matrix4x4F& mat1, const Matrix4x4F& mat2) -> Matrix4x4F;
 	static auto Mult(const Matrix4x4F& mat, const Vector4F& vect) -> Vector4F;
-	static auto Mult(const Vector4F& vect, const Matrix4x4F& mat) -> Vector4F;
+	//static auto Mult(const Vector4F& vect, const Matrix4x4F& mat) -> Vector4F;
 
 	static auto	Translate(const Matrix4x4F& mat, const Vector3F& value) -> Matrix4x4F;
 	/*
@@ -29,6 +29,7 @@ public:
 	
 	static auto	Perspective(const float Fov, const float aspectRatio, const float zNear, const float zFar) -> Matrix4x4F;
 	static auto	Orthographic(const float right, const float top, const float zNear, const float zFar) -> Matrix4x4F;
+
 	static auto	Transpose(const Matrix4x4F&) -> Matrix4x4F;
 	static auto	Inverse(const Matrix4x4F&) -> Matrix4x4F;
 	static auto	FastInverse(const Matrix4x4F&) -> Matrix4x4F;

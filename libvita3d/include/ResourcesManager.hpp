@@ -3,6 +3,7 @@
 
 #include "Material.hpp"
 #include "Vita3DObj.hpp"
+#include "Texture.hpp"
 
 #include <map>
 
@@ -27,13 +28,17 @@ public:
 
 	auto	GetObject(int id) const -> Vita3DObj*;
 	auto	GetMaterial(int id) const -> Material*;
+	auto	GetTexture(int id) const -> Texture*;
 
 	auto	AddMaterial(Material* mat) -> int;
 	auto	DeleteMaterial(int id) -> void;
 
 	auto	AddObject(Vita3DObj* obj) -> int;
 	auto	DeleteObject(int id) -> void;
-	
+
+	auto	AddTexture(Texture* tex) -> int;
+	auto	DeleteTexture(int id) -> void;
+
 	auto	LoadObject(std::string const& filename) -> int;
 	auto	LoadObjectBinaryFile(std::string const& filename) -> int;
 	auto	SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void;
@@ -50,12 +55,14 @@ public:
 protected:
 
 private:
+	std::map<int, Texture*>	textures;
 	std::map<int, Vita3DObj*>	customObjects;
 	std::map<int, Material*>	customMaterials;
 	
 	Vita3DObj	Primitives[3];
 
 	int	objNbr = 0;
+	int	texNbr = 0;
 	int matNbr = 0;
 
 };

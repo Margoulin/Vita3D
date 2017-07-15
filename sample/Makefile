@@ -11,7 +11,7 @@ PROJECT_TITLEID := MARG00001
 PROJECT := Vita3DSample
 CXXFLAGS += -std=c++11 -Isrc/include
 
-LIBS := -lVita3d -lSceCtrl_stub -lSceGxm_stub -lSceDisplay_stub \
+LIBS := -lVita3d -lSceCtrl_stub -lSceGxm_stub -lSceDisplay_stub -lpng\
 	-lSceCommonDialog_stub -lz -lm -lc
 
 SRC_C :=$(call rwildcard, src/, *.c)
@@ -30,6 +30,7 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add sce_sys/livearea/contents/bg.png=sce_sys/livearea/contents/bg.png \
 		--add sce_sys/livearea/contents/startup.png=sce_sys/livearea/contents/startup.png \
 		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
+		--add Resources/Master.PNG=Resources/Master.PNG \
 		--add Resources/Sherlock.obj=Resources/Sherlock.obj \
 		--add Resources/Sherlock.bo=Resources/Sherlock.bo \
 		--add Resources/Sherlock.mtl=Resources/Sherlock.mtl		\

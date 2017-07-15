@@ -5,6 +5,7 @@
 #include <psp2/gxm.h>
 
 #include "Vita3DMath/Vector.hpp"
+#include "Texture.hpp"
 
 #define MSAA_MODE			SCE_GXM_MULTISAMPLE_NONE
 
@@ -34,6 +35,8 @@ public:
 	SceGxmShaderPatcherId clearFragmentProgramId;
 	SceGxmShaderPatcherId objectVertexProgramId;
 	SceGxmShaderPatcherId objectFragmentProgramId;
+	SceGxmShaderPatcherId textureVertexProgramId;
+	SceGxmShaderPatcherId textureFragmentProgramId;
 
 
 	SceUID clearVerticesUid = 0;
@@ -41,12 +44,19 @@ public:
 	Vector2F *clearVertices = nullptr;
 	uint16_t *clearIndices = nullptr;
 
-	SceGxmVertexProgram *_vita3d_objectVertexProgram = nullptr;
-	SceGxmFragmentProgram *_vita3d_objectFragmentProgram = nullptr;
+	SceUID	textureVerticesUID = 0;
+	SceUID	textureIndicesUID = 0;
+	vita2d_texture_vertex*	textureVertices = nullptr;
+	uint16_t*				textureIndices = nullptr;
 
+	SceGxmVertexProgram*	objectVertexProgram = nullptr;
+	SceGxmFragmentProgram*	objectFragmentProgram = nullptr;
+	SceGxmVertexProgram *	textureVertexProgram = nullptr;
+	SceGxmFragmentProgram *	textureFragmentProgram = nullptr;
 	
 	const SceGxmProgramParameter *_vita3d_clearClearColorParam = nullptr;
 	const SceGxmProgramParameter *_vita3d_objectMvpParam = nullptr;
+	const SceGxmProgramParameter*	textureMvpParam = nullptr;
 	const SceGxmProgramParameter*	materialAmbient = nullptr;
 	const SceGxmProgramParameter*	materialDiffuse = nullptr;
 	const SceGxmProgramParameter*	materialSpecular = nullptr;

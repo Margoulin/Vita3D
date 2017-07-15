@@ -1,6 +1,7 @@
 #include "ResourcesManager.hpp"
 
 #include "SerializeObj.hpp"
+#include"Vita3DMath/Vita3DMath.hpp"
 #include <fstream>
 
 ResourcesManager*	ResourcesManager::Instance = nullptr;
@@ -62,6 +63,89 @@ auto	ResourcesManager::Initialize() -> void
 	Primitives[0].loaded = true;
 	Primitives[0].UploadInVRAM();
 
+	tempMesh = new Mesh();
+
+	const double t = (1.0 + Sqrt(5.0)) / 2.0;
+
+	tempMesh->Vertices.push_back(Vector3F(-1.0f, t, 0.0f).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(1.0, t, 0.0).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(-1.0, -t, 0.0).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(1.0, -t, 0.0).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(0.0, -1.0, t).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(0.0, 1.0, t).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(0.0, -1.0, -t).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(0.0, 1.0, -t).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(t, 0.0, -1.0).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(t, 0.0, 1.0).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(-t, 0.0, -1.0).Normalized());
+	tempMesh->Vertices.push_back(Vector3F(-t, 0.0, 1.0).Normalized());
+
+	// Faces
+	tempMesh->Indices.push_back(0);
+	tempMesh->Indices.push_back(11);
+	tempMesh->Indices.push_back(5);
+	tempMesh->Indices.push_back(0);
+	tempMesh->Indices.push_back(5);
+	tempMesh->Indices.push_back(1);
+	tempMesh->Indices.push_back(0);
+	tempMesh->Indices.push_back(1);
+	tempMesh->Indices.push_back(7);
+	tempMesh->Indices.push_back(0);
+	tempMesh->Indices.push_back(7);
+	tempMesh->Indices.push_back(10);
+	tempMesh->Indices.push_back(0);
+	tempMesh->Indices.push_back(10);
+	tempMesh->Indices.push_back(11);
+	tempMesh->Indices.push_back(1);
+	tempMesh->Indices.push_back(5);
+	tempMesh->Indices.push_back(9);
+	tempMesh->Indices.push_back(5);
+	tempMesh->Indices.push_back(11);
+	tempMesh->Indices.push_back(4);
+	tempMesh->Indices.push_back(11);
+	tempMesh->Indices.push_back(10);
+	tempMesh->Indices.push_back(2);
+	tempMesh->Indices.push_back(10);
+	tempMesh->Indices.push_back(7);
+	tempMesh->Indices.push_back(6);
+	tempMesh->Indices.push_back(7);
+	tempMesh->Indices.push_back(1);
+	tempMesh->Indices.push_back(8);
+	tempMesh->Indices.push_back(3);
+	tempMesh->Indices.push_back(9);
+	tempMesh->Indices.push_back(4);
+	tempMesh->Indices.push_back(3);
+	tempMesh->Indices.push_back(4);
+	tempMesh->Indices.push_back(2);
+	tempMesh->Indices.push_back(3);
+	tempMesh->Indices.push_back(2);
+	tempMesh->Indices.push_back(6);
+	tempMesh->Indices.push_back(3);
+	tempMesh->Indices.push_back(6);
+	tempMesh->Indices.push_back(8);
+	tempMesh->Indices.push_back(3);
+	tempMesh->Indices.push_back(8);
+	tempMesh->Indices.push_back(9);
+	tempMesh->Indices.push_back(4);
+	tempMesh->Indices.push_back(9);
+	tempMesh->Indices.push_back(5);
+	tempMesh->Indices.push_back(2);
+	tempMesh->Indices.push_back(4);
+	tempMesh->Indices.push_back(11);
+	tempMesh->Indices.push_back(6);
+	tempMesh->Indices.push_back(2);
+	tempMesh->Indices.push_back(10);
+	tempMesh->Indices.push_back(8);
+	tempMesh->Indices.push_back(6);
+	tempMesh->Indices.push_back(7);
+	tempMesh->Indices.push_back(9);
+	tempMesh->Indices.push_back(8);
+	tempMesh->Indices.push_back(1);
+
+	Primitives[1].meshes.push_back(tempMesh);
+	Primitives[1].loaded = true;
+	Primitives[1].UploadInVRAM();
+
 	Material* mat = new Material();
 	mat->Ambient = Vector3F(1.0f, 1.0f, 1.0f);
 	mat->Diffuse = Vector3F(1.0f, 1.0f, 1.0f);
@@ -83,6 +167,10 @@ auto	ResourcesManager::Shutdown() -> void
 	for (auto&& mat : customMaterials)
 		delete mat.second;
 	customMaterials.clear();
+
+	for (auto&& tex : textures)
+		Texture::FreeTexture(tex.second);
+	textures.clear();
 }
 
 auto	ResourcesManager::GetObject(int id) const -> Vita3DObj*
@@ -99,6 +187,15 @@ auto	ResourcesManager::GetMaterial(int id) const -> Material*
 	auto it = customMaterials.find(id);
 
 	if (it == customMaterials.end())
+		return nullptr;
+	return it->second;
+}
+
+auto	ResourcesManager::GetTexture(int id) const -> Texture*
+{
+	auto it = textures.find(id);
+
+	if (it == textures.end())
 		return nullptr;
 	return it->second;
 }
@@ -135,6 +232,23 @@ auto	ResourcesManager::DeleteObject(int id) -> void
 		it->second->Shutdown();
 		delete it->second;
 		customObjects.erase(it);
+	}
+}
+
+auto	ResourcesManager::AddTexture(Texture* tex) -> int
+{
+	texNbr++;
+	textures.insert(std::make_pair(texNbr, tex));
+	return texNbr;
+}
+
+auto	ResourcesManager::DeleteTexture(int id) -> void
+{
+	auto it = textures.find(id);
+	if (it != textures.end())
+	{
+		Texture::FreeTexture(it->second);
+		textures.erase(it);
 	}
 }
 

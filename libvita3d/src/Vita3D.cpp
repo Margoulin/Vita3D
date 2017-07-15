@@ -3,9 +3,21 @@
 #include "Vita3DGraphicHandler.hpp"
 #include "ResourcesManager.hpp"
 
+#include "Texture.hpp"
+#include "PNGLoader.hpp"
+
 Vita3DGraphicHandler*	Vita3DGraphicHandler::Instance = nullptr;
 bool					Vita3D::Initialized = false;
-	
+
+auto	Vita3D::LoadTexture(std::string const& filename) -> int
+{
+	Texture* tex = nullptr;
+	tex = PNGLoader::LoadPNGFile(filename.c_str());
+	if (tex)
+		return ResourcesManager::Instance->AddTexture(tex);
+	return -1;
+}
+
 auto	Vita3D::LoadObject(std::string const& filename) -> int
 {
 	return ResourcesManager::Instance->LoadObject(filename);

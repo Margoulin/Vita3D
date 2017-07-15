@@ -19,7 +19,6 @@
 #define DISPLAY_PIXEL_FORMAT		SCE_DISPLAY_PIXELFORMAT_A8B8G8R8
 #define DISPLAY_BUFFER_COUNT		3
 #define DISPLAY_MAX_PENDING_SWAPS	2
-#define DEFAULT_TEMP_POOL_SIZE		(1  * 1024 * 1024)
 
 class Vita3DGraphicHandler
 {
@@ -33,7 +32,8 @@ public:
 	
 	auto Initialize() -> void;
 	auto Shutdown() -> void;
-	
+
+	auto	GetRenderTarget() const -> SceGxmRenderTarget* { return renderTarget; }
 	auto	GetContext() const -> SceGxmContext* { return context; }
 	auto	GetCamera() -> RenderCamera* { return &mainCamera; }
 
@@ -53,7 +53,6 @@ public:
 	ShaderManager				shaderManager;
 
 	SceGxmContextParams 		contextParams;
-	SceGxmRenderTarget*			renderTarget = NULL;
 	void*						displayBufferData[DISPLAY_BUFFER_COUNT];
 	SceUID 						displayBufferUid[DISPLAY_BUFFER_COUNT];
 	SceGxmColorSurface			displaySurface[DISPLAY_BUFFER_COUNT];
@@ -79,8 +78,9 @@ public:
 protected:
 
 private:
-	SceGxmContext*	context = nullptr;	
-	RenderCamera	mainCamera;
+	SceGxmRenderTarget*		renderTarget = nullptr;
+	SceGxmContext*			context = nullptr;	
+	RenderCamera			mainCamera;
 
 };
 

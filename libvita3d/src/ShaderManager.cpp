@@ -6,17 +6,25 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "Texture.hpp"
+
 #include "utils.h"
+
+#include "Vita3DDebug.hpp"
 
 extern SceGxmProgram _binary_shaders_clear_v_gxp_start;
 extern SceGxmProgram _binary_shaders_clear_f_gxp_start;
 extern SceGxmProgram _binary_shaders_object_v_gxp_start;
 extern SceGxmProgram _binary_shaders_object_f_gxp_start;
+extern SceGxmProgram _binary_shaders_texture_v_gxp_start;
+extern SceGxmProgram _binary_shaders_texture_f_gxp_start;
 
 static const SceGxmProgram *const 	clearVertexProgramGxp = &_binary_shaders_clear_v_gxp_start;
 static const SceGxmProgram *const 	clearFragmentProgramGxp = &_binary_shaders_clear_f_gxp_start;
 static const SceGxmProgram *const objectVertexProgramGxp = &_binary_shaders_object_v_gxp_start;
 static const SceGxmProgram *const 	objectFragmentProgramGxp = &_binary_shaders_object_f_gxp_start;
+static const SceGxmProgram *const textureVertexProgramGxp = &_binary_shaders_texture_v_gxp_start;
+static const SceGxmProgram *const 	textureFragmentProgramGxp = &_binary_shaders_texture_f_gxp_start;
 
 static void *patcher_host_alloc(void *user_data, unsigned int size)
 {
@@ -30,6 +38,7 @@ static void patcher_host_free(void *user_data, void *mem)
 
 auto	ShaderManager::Initialize() -> void
 {
+	Vita3DDebug::Print("Before");
 	const unsigned int patcherBufferSize = 64 * 1024;
 	const unsigned int patcherVertexUsseSize = 64 * 1024;
 	const unsigned int patcherFragmentUsseSize = 64 * 1024;
@@ -79,11 +88,15 @@ auto	ShaderManager::Initialize() -> void
 	sceGxmProgramCheck(clearFragmentProgramGxp);
 	sceGxmProgramCheck(objectFragmentProgramGxp);
 	sceGxmProgramCheck(objectVertexProgramGxp);
+	sceGxmProgramCheck(textureFragmentProgramGxp);
+	sceGxmProgramCheck(textureVertexProgramGxp);
 
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearVertexProgramGxp, &clearVertexProgramId);
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearFragmentProgramGxp, &clearFragmentProgramId);
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, objectVertexProgramGxp, &objectVertexProgramId);
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, objectFragmentProgramGxp, &objectFragmentProgramId);
+	sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureVertexProgramGxp, &textureVertexProgramId);
+	sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureFragmentProgramGxp, &textureFragmentProgramId);
 
 	static SceGxmBlendInfo blend_info;
 	blend_info.colorFunc = SCE_GXM_BLEND_FUNC_ADD;
@@ -123,6 +136,34 @@ auto	ShaderManager::Initialize() -> void
 		NULL,
 		clearVertexProgramGxp,
 		&clearFragmentProgram);
+
+	textureVertices = (vita2d_texture_vertex*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+		4 * sizeof(vita2d_texture_vertex),
+		sizeof(vita2d_texture_vertex), SCE_GXM_MEMORY_ATTRIB_READ,
+		&textureVerticesUID);
+
+	textureIndices = (uint16_t*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+		4 * sizeof(uint16_t),
+		sizeof(uint16_t), SCE_GXM_MEMORY_ATTRIB_READ,
+		&textureIndicesUID);
+
+	textureVertices[0].z = +0.5f;
+	textureVertices[0].u = 0.0f;
+	textureVertices[0].v = 0.0f;
+	textureVertices[1].z = +0.5f;
+	textureVertices[1].u = 1.0f;
+	textureVertices[1].v = 0.0f;
+	textureVertices[2].z = +0.5f;
+	textureVertices[2].u = 0.0f;
+	textureVertices[2].v = 1.0f;
+	textureVertices[3].z = +0.5f;
+	textureVertices[3].u = 1.0f;
+	textureVertices[3].v = 1.0f;
+
+	textureIndices[0] = 0;
+	textureIndices[1] = 1;
+	textureIndices[2] = 2;
+	textureIndices[3] = 3;
 
 	clearVertices = (Vector2F*)gpu_alloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
@@ -168,7 +209,7 @@ auto	ShaderManager::Initialize() -> void
 		1,
 		objectVertexStreams,
 		1,
-		&_vita3d_objectVertexProgram);
+		&objectVertexProgram);
 
 	sceGxmShaderPatcherCreateFragmentProgram(
 		shaderPatcher,
@@ -177,15 +218,57 @@ auto	ShaderManager::Initialize() -> void
 		MSAA_MODE,
 		&blend_info,
 		objectVertexProgramGxp,
-		&_vita3d_objectFragmentProgram);
+		&objectFragmentProgram);
 
+	const SceGxmProgramParameter *paramTexturePositionAttribute = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "aPosition");
+	const SceGxmProgramParameter *paramTextureTexcoordAttribute = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "aTexcoord");
+
+	// create texture vertex format
+	SceGxmVertexAttribute textureVertexAttributes[2];
+	SceGxmVertexStream textureVertexStreams[1];
+	/* x,y,z: 3 float 32 bits */
+	textureVertexAttributes[0].streamIndex = 0;
+	textureVertexAttributes[0].offset = 0;
+	textureVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	textureVertexAttributes[0].componentCount = 3; // (x, y, z)
+	textureVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramTexturePositionAttribute);
+	/* u,v: 2 floats 32 bits */
+	textureVertexAttributes[1].streamIndex = 0;
+	textureVertexAttributes[1].offset = 12; // (x, y, z) * 4 = 12 bytes
+	textureVertexAttributes[1].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	textureVertexAttributes[1].componentCount = 2; // (u, v)
+	textureVertexAttributes[1].regIndex = sceGxmProgramParameterGetResourceIndex(paramTextureTexcoordAttribute);
+	// 16 bit (short) indices
+	textureVertexStreams[0].stride = sizeof(vita2d_texture_vertex);
+	textureVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
+
+	// create texture shaders
+	sceGxmShaderPatcherCreateVertexProgram(
+		shaderPatcher,
+		textureVertexProgramId,
+		textureVertexAttributes,
+		2,
+		textureVertexStreams,
+		1,
+		&textureVertexProgram);
+
+	sceGxmShaderPatcherCreateFragmentProgram(
+		shaderPatcher,
+		textureFragmentProgramId,
+		SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
+		MSAA_MODE,
+		&blend_info,
+		textureVertexProgramGxp,
+		&textureFragmentProgram);
 
 	_vita3d_clearClearColorParam = sceGxmProgramFindParameterByName(clearFragmentProgramGxp, "uClearColor");
 	_vita3d_objectMvpParam = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "u_mvp_matrix");
+	textureMvpParam = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "wvp");
 	materialAmbient = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.ambient");
 	materialDiffuse = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.diffuse");
 	materialSpecular = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.specular");
 	materialShininess = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.shininess");
+	Vita3DDebug::Print("After");
 }
 
 auto	ShaderManager::Shutdown() -> void
@@ -197,8 +280,8 @@ auto	ShaderManager::ReleaseShaders() -> void
 {
 	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, clearFragmentProgram);
 	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, clearVertexProgram);
-	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, _vita3d_objectFragmentProgram);
-	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, _vita3d_objectVertexProgram);
+	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, objectFragmentProgram);
+	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, objectVertexProgram);
 
 	gpu_free(clearIndicesUid);
 	gpu_free(clearVerticesUid);

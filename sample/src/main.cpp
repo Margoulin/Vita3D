@@ -1,4 +1,5 @@
 #include <Vita3D.hpp>
+#include <Vita3DDebug.hpp>
 
 #include <psp2/ctrl.h>
 #include <psp2/kernel/processmgr.h>
@@ -13,16 +14,18 @@ int main()
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG);
 	SceCtrlData pad;
 	memset(&pad, 0, sizeof(pad));
-	
+
 	Vita3D::SetCameraPos(Vector3F(0.0f, 0.0f, -2.0f));
 
 	int objID = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
-	
+
+	int texID = Vita3D::LoadTexture("app0:Resources/Master.PNG");
+
 	Vita3D::UploadObjectInVRAM(objID);
-	
+
 	Transform	firstCubeTransform;
-	//firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
-	
+	firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
+
 	Vector3F firstCubePos;
 	Vector3F firstCubeScale(1.0f, 1.0f, 1.0f);
 	Vector3F secondCubePos(0.75f, 0.0f, 0.0f);
@@ -30,13 +33,21 @@ int main()
 
 	Transform	secondTrans;
 	secondTrans.SetPosition(secondCubePos);
-	
+
 	bool run = true;
 
-	while(run)
+	bool	crossPressed = false;
+	bool	circlePressed = false;
+	bool	squarePressed = false;
+
+	bool	sherlock = false;
+	bool	texture = false;
+	bool	cube = false;
+
+	while (run)
 	{
 		sceCtrlPeekBufferPositive(0, &pad, 1);
-		
+
 		Vector3F	pos = Vita3D::GetCameraPos();
 		Vector3F	camOffset;
 
@@ -50,12 +61,43 @@ int main()
 			camOffset.z -= 0.15f;
 		if (pad.buttons == SCE_CTRL_SELECT)
 			run = false;
+		if (pad.buttons & SCE_CTRL_CIRCLE)
+		{
+			if (!circlePressed)
+			{
+				circlePressed = true;
+				sherlock = !sherlock;
+			}
+		}
+		else
+			circlePressed = false;
+		if (pad.buttons & SCE_CTRL_CROSS)
+		{
+			if (!crossPressed)
+			{
+				crossPressed = true;
+				cube = !cube;
+			}
+		}
+		else
+			crossPressed = false;
+		if (pad.buttons & SCE_CTRL_SQUARE)
+		{
+			if (!squarePressed)
+			{
+				squarePressed = true;
+				texture = !texture;
+			}
+		}
+		else
+			squarePressed = false;
+
 
 		int stickLX = pad.lx - 128;
 		int stickLY = pad.ly - 128;
 		int stickRX = pad.rx - 128;
 		int stickRY = pad.ry - 128;
-		
+
 		if (stickLX <= -64)
 			camOffset.x += 0.15f;
 		else if (stickLX >= 64)
@@ -79,15 +121,19 @@ int main()
 		Vita3D::BeginDrawing();
 		Vita3D::ClearScreen();
 
-		Vita3D::DrawObject(objID, firstCubeTransform);
-		Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
-		
+		if (sherlock)
+			Vita3D::DrawObject(objID, firstCubeTransform);
+		if (texture)
+			Vita3D::DrawTexture(texID, 20.0f, 350.0f);
+		if (cube)
+			Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
+
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();
 	}
-	
+
 	Vita3D::Shutdown();
-	
+
 	sceKernelExitProcess(0);
 
 	return 0;

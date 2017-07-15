@@ -165,10 +165,12 @@ auto	Matrix4x4F::Orthographic(const float right, const float top, const float zN
 
 	Matrix4x4F	res = Matrix4x4F::identity;
 
-	res[0] = 1.0f / right;
-	res[5] = 1.0f / top;
-	res[10] = -2.0f / (fMn);
-	res[14] = -(zFar + zNear) / fMn;
+	res[0] = 2.0f / right;
+	res[5] = -2.0f / top;
+	res[10] = -2.0f * fMn;
+	res[12] = -1.0f;
+	res[13] = 1.0f;
+	res[14] = (zFar + zNear) / fMn;
 	return res;
 }
 
