@@ -19,9 +19,13 @@ int main()
 
 	int objID = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
 
+	int	obj2ID = Vita3D::LoadObject("app0:Resources/nanosuit.obj");
+
 	int texID = Vita3D::LoadTexture("app0:Resources/Master.PNG");
 
 	Vita3D::UploadObjectInVRAM(objID);
+	if (obj2ID)
+		Vita3D::UploadObjectInVRAM(obj2ID);
 
 	Transform	firstCubeTransform;
 	firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
@@ -127,6 +131,8 @@ int main()
 			Vita3D::DrawTexture(texID, 20.0f, 350.0f);
 		if (cube)
 			Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
+		Vita3D::DrawObject(obj2ID, firstCubeTransform);
+
 
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();

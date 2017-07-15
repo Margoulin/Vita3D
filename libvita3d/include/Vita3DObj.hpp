@@ -4,6 +4,7 @@
 #include <psp2/types.h>
 #include <string>
 
+#include "Vita3DMath/Matrix.hpp"
 #include "Mesh.hpp"
 
 class Vita3DObj
@@ -18,7 +19,7 @@ public:
 	auto	UploadInVRAM() -> bool;
 	auto	DeleteFromVRAM() -> bool;
 	auto	Shutdown() -> void;
-	auto	Draw() -> void;
+	auto	Draw(Matrix4x4F const& wvpMat) -> void;
 
 	auto	operator = (const Vita3DObj&)->Vita3DObj& = delete;
 	auto	operator = (Vita3DObj&&)->Vita3DObj& = delete;

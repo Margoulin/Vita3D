@@ -11,7 +11,7 @@ public:
 	Material(Material&&) = delete;
 	~Material() = default;
 
-	auto	Bind() -> void;
+	virtual auto	Bind() -> void;
 
 	auto	operator = (const Material&)->Material& = delete;
 	auto	operator = (Material&&)->Material& = delete;

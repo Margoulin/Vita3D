@@ -366,15 +366,15 @@ auto	ResourcesManager::DeleteObjectInVRAM(int id) -> void
 		it->second->DeleteFromVRAM();
 }
 
-auto	ResourcesManager::DrawPrimitive(PRIMITIVE_TYPE type) -> void
+auto	ResourcesManager::DrawPrimitive(PRIMITIVE_TYPE type, Matrix4x4F const& wvpMat) -> void
 {
 	if (type == PRIMITIVE_TYPE::CUBE)
-		Primitives[0].Draw();
+		Primitives[0].Draw(wvpMat);
 }
 
-auto	ResourcesManager::DrawObject(int id) -> void
+auto	ResourcesManager::DrawObject(int id, Matrix4x4F const& wvpMat) -> void
 {
 	auto it = customObjects.find(id);
 	if (it != customObjects.end())
-		it->second->Draw();
+		it->second->Draw(wvpMat);
 }

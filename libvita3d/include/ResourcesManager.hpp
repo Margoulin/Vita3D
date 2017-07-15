@@ -46,8 +46,8 @@ public:
 	auto	UploadObjectInVRAM(int id) -> void;
 	auto	DeleteObjectInVRAM(int id) -> void;
 	
-	auto	DrawPrimitive(PRIMITIVE_TYPE type) -> void;
-	auto	DrawObject(int id) -> void;
+	auto	DrawPrimitive(PRIMITIVE_TYPE type, Matrix4x4F const& wvpMat) -> void;
+	auto	DrawObject(int id, Matrix4x4F const& wvpMat) -> void;
 
 	auto	operator = (const ResourcesManager&)->ResourcesManager& = delete;
 	auto	operator = (ResourcesManager&&)->ResourcesManager& = delete;

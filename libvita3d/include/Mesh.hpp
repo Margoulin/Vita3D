@@ -6,6 +6,7 @@
 #include <psp2/types.h>
 
 #include "Vita3DMath/Vector.hpp"
+#include "Vita3DMath/Matrix.hpp"
 
 class Mesh
 {
@@ -15,7 +16,7 @@ public:
 	Mesh(Mesh&&) = delete;
 	~Mesh() = default;
 
-	auto	Draw() -> void;
+	auto	Draw(Matrix4x4F const& wvpMat) -> void;
 
 	auto	operator = (const Mesh&)->Mesh& = delete;
 	auto	operator = (Mesh&&)->Mesh& = delete;

@@ -34,6 +34,8 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add Resources/Sherlock.obj=Resources/Sherlock.obj \
 		--add Resources/Sherlock.bo=Resources/Sherlock.bo \
 		--add Resources/Sherlock.mtl=Resources/Sherlock.mtl		\
+		--add Resources/nanosuit.obj=Resources/nanosuit.obj \
+		--add Resources/nanosuit.mtl=Resources/nanosuit.mtl \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

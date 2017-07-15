@@ -6,6 +6,9 @@ auto	Material::Bind() -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 
+	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager.objectVertexProgram);
+	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager.objectFragmentProgram);
+
 	void *uniform_buffer;
 	sceGxmReserveFragmentDefaultUniformBuffer(handler->GetContext(), &uniform_buffer);
 	sceGxmSetUniformDataF(uniform_buffer, handler->shaderManager.materialAmbient, 0, 3, (float*)&(Ambient));

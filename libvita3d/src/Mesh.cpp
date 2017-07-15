@@ -5,7 +5,7 @@
 #include "Vita3DGraphicHandler.hpp"
 #include "ResourcesManager.hpp"
 
-auto	Mesh::Draw() -> void
+auto	Mesh::Draw(Matrix4x4F const& wvpMat) -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 
@@ -13,6 +13,10 @@ auto	Mesh::Draw() -> void
 	
 	if (mat)
 		mat->Bind();
+
+	void *vertexDefaultBuffer;
+	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
+	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, wvpMat.GetArray());
 
 	sceGxmSetVertexStream(handler->GetContext(), 0, GPUVertices);
 	sceGxmDraw(handler->GetContext(), SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, GPUIndices, Indices.size());

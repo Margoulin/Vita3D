@@ -30,14 +30,7 @@ auto Vita3D::DrawCube(Transform const& transform, Vector3F color) -> void
 	SceGxmCullMode cull = SCE_GXM_CULL_CW;
 	sceGxmSetCullMode(handler->GetContext(), cull);
 	
-	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager.objectVertexProgram);
-	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager.objectFragmentProgram);
-	
-	void *vertexDefaultBuffer;
-	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
-	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, finalMat.GetArray());
-
-	ResourcesManager::Instance->DrawPrimitive(ResourcesManager::PRIMITIVE_TYPE::CUBE);
+	ResourcesManager::Instance->DrawPrimitive(ResourcesManager::PRIMITIVE_TYPE::CUBE, finalMat);
 }
 
 auto Vita3D::DrawSphere(Transform const& transform, Vector3F color) -> void
@@ -52,14 +45,7 @@ auto Vita3D::DrawSphere(Transform const& transform, Vector3F color) -> void
 	SceGxmCullMode cull = SCE_GXM_CULL_CW;
 	sceGxmSetCullMode(handler->GetContext(), cull);
 	
-	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager.objectVertexProgram);
-	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager.objectFragmentProgram);
-	
-	void *vertexDefaultBuffer;
-	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
-	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, finalMat.GetArray());
-
-	ResourcesManager::Instance->DrawPrimitive(ResourcesManager::PRIMITIVE_TYPE::SPHERE);
+	ResourcesManager::Instance->DrawPrimitive(ResourcesManager::PRIMITIVE_TYPE::SPHERE, finalMat);
 }
 
 
@@ -75,14 +61,7 @@ auto Vita3D::DrawObject(int obj, Transform const& transform) -> void
 	SceGxmCullMode cull = SCE_GXM_CULL_CW;
 	sceGxmSetCullMode(handler->GetContext(), cull);
 
-	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager.objectVertexProgram);
-	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager.objectFragmentProgram);
-
-	void *vertexDefaultBuffer;
-	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
-	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, finalMat.GetArray());
-
-	ResourcesManager::Instance->DrawObject(obj);
+	ResourcesManager::Instance->DrawObject(obj, finalMat);
 }
 
 auto Vita3D::DrawTexture(int obj, float x, float y) -> void

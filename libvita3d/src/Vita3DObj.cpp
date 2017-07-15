@@ -4,8 +4,10 @@
 #include "tiny_obj_loader.h"
 
 #include "Material.hpp"
+#include "TextureMaterial.hpp"
 
 #include "ResourcesManager.hpp"
+#include "PNGLoader.hpp"
 
 auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 {
@@ -23,8 +25,20 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 
 	for (auto&& mat : materials)
 	{
-		Material* newMaterial = new Material();
-		
+		Material*	newMaterial = nullptr;
+		/*
+		if (mat.diffuse_texname != "")
+		{
+			TextureMaterial* tempTexMat = new TextureMaterial();
+			newMaterial = (Material*)tempTexMat;
+			tempTexMat->DiffuseMap = mat.diffuse_texname;
+			
+			if (Texture* tex = PNGLoader::LoadPNGFile(mat.diffuse_texname.c_str()))
+				tempTexMat->textureID = ResourcesManager::Instance->AddTexture(tex);
+		}
+		else*/
+			newMaterial = new Material();
+
 		newMaterial->Ambient = Vector3F(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
 		newMaterial->Diffuse = Vector3F(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
 		newMaterial->Specular = Vector3F(mat.specular[0], mat.specular[1], mat.specular[2]);
@@ -146,8 +160,8 @@ auto	Vita3DObj::Shutdown() -> void
 	}
 }
 
-auto	Vita3DObj::Draw() -> void
+auto	Vita3DObj::Draw(Matrix4x4F const& wvpMat) -> void
 {
 	for (auto&& mesh : meshes)
-		mesh->Draw();
+		mesh->Draw(wvpMat);
 }
