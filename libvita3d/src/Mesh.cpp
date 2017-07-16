@@ -16,7 +16,10 @@ auto	Mesh::Draw(Matrix4x4F const& wvpMat) -> void
 
 	void *vertexDefaultBuffer;
 	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
-	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, wvpMat.GetArray());
+	if (mat->Desc.DiffuseMap)
+		sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager.textureMvpParam, 0, 16, wvpMat.GetArray());
+	else
+		sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, wvpMat.GetArray());
 
 	sceGxmSetVertexStream(handler->GetContext(), 0, GPUVertices);
 	sceGxmDraw(handler->GetContext(), SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, GPUIndices, Indices.size());

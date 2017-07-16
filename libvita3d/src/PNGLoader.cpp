@@ -124,7 +124,8 @@ auto	PNGLoader::LoadPNGFile(const char *filename)->Texture*
 
 	if ((fd = sceIoOpen(filename, SCE_O_RDONLY, 0777)) < 0)
 	{
-		Vita3DDebug::Print("Can't open");
+		std::string	file = filename;
+		Vita3DDebug::Print("Can't open : " + file);
 		return NULL;
 	}
 

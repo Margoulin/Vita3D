@@ -11,6 +11,13 @@ public:
 	Material(Material&&) = delete;
 	~Material() = default;
 
+	struct MaterialDesc
+	{
+		bool	DiffuseMap = false;
+	};
+
+	MaterialDesc	Desc;
+
 	virtual auto	Bind() -> void;
 
 	auto	operator = (const Material&)->Material& = delete;
@@ -20,6 +27,10 @@ public:
 	Vector3F		Specular;
 	Vector3F		Diffuse;
 	float			Shininess = 0.0f;
+
+	std::string		DiffuseMap = "";
+	int				DiffuseMapID = -1;
+
 	std::string		Name = "";
 };
 

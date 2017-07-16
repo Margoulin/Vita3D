@@ -36,6 +36,12 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add Resources/Sherlock.mtl=Resources/Sherlock.mtl		\
 		--add Resources/nanosuit.obj=Resources/nanosuit.obj \
 		--add Resources/nanosuit.mtl=Resources/nanosuit.mtl \
+		--add Resources/arm_dif.png=Resources/arm_dif.png \
+		--add Resources/glass_dif.png=Resources/glass_dif.png \
+		--add Resources/body_dif.png=Resources/body_dif.png \
+		--add Resources/hand_dif.png=Resources/hand_dif.png \
+		--add Resources/helmet_diff.png=Resources/helmet_diff.png \
+		--add Resources/leg_dif.png=Resources/leg_dif.png \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

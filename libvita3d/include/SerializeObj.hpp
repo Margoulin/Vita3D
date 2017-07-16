@@ -10,8 +10,6 @@
 
 #include "Vita3DMath/Vector.hpp"
 
-#include "Vita3DDebug.hpp"
-
 template<class Archive>
 void serialize(Archive & archive,
 	Vector3F& vec)

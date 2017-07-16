@@ -10,8 +10,6 @@
 
 #include "utils.h"
 
-#include "Vita3DDebug.hpp"
-
 extern SceGxmProgram _binary_shaders_clear_v_gxp_start;
 extern SceGxmProgram _binary_shaders_clear_f_gxp_start;
 extern SceGxmProgram _binary_shaders_object_v_gxp_start;
@@ -38,7 +36,6 @@ static void patcher_host_free(void *user_data, void *mem)
 
 auto	ShaderManager::Initialize() -> void
 {
-	Vita3DDebug::Print("Before");
 	const unsigned int patcherBufferSize = 64 * 1024;
 	const unsigned int patcherVertexUsseSize = 64 * 1024;
 	const unsigned int patcherFragmentUsseSize = 64 * 1024;
@@ -199,7 +196,7 @@ auto	ShaderManager::Initialize() -> void
 	objectVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
 	objectVertexAttributes[0].componentCount = 3;
 	objectVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramObjectPositionAttribute);
-	objectVertexStreams[0].stride = sizeof(Vector3F);
+	objectVertexStreams[0].stride = sizeof(vita2d_texture_vertex);
 	objectVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
 	
 	sceGxmShaderPatcherCreateVertexProgram(
@@ -268,7 +265,6 @@ auto	ShaderManager::Initialize() -> void
 	materialDiffuse = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.diffuse");
 	materialSpecular = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.specular");
 	materialShininess = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.shininess");
-	Vita3DDebug::Print("After");
 }
 
 auto	ShaderManager::Shutdown() -> void

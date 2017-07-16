@@ -4,7 +4,6 @@
 #include "tiny_obj_loader.h"
 
 #include "Material.hpp"
-#include "TextureMaterial.hpp"
 
 #include "ResourcesManager.hpp"
 #include "PNGLoader.hpp"
@@ -25,19 +24,14 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 
 	for (auto&& mat : materials)
 	{
-		Material*	newMaterial = nullptr;
-		/*
+		Material*	newMaterial = new Material();
 		if (mat.diffuse_texname != "")
 		{
-			TextureMaterial* tempTexMat = new TextureMaterial();
-			newMaterial = (Material*)tempTexMat;
-			tempTexMat->DiffuseMap = mat.diffuse_texname;
-			
-			if (Texture* tex = PNGLoader::LoadPNGFile(mat.diffuse_texname.c_str()))
-				tempTexMat->textureID = ResourcesManager::Instance->AddTexture(tex);
+			newMaterial->DiffuseMap = mat.diffuse_texname;
+			newMaterial->Desc.DiffuseMap = true;
+			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.diffuse_texname).c_str()))
+				newMaterial->DiffuseMapID = ResourcesManager::Instance->AddTexture(tex);
 		}
-		else*/
-			newMaterial = new Material();
 
 		newMaterial->Ambient = Vector3F(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
 		newMaterial->Diffuse = Vector3F(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
@@ -108,9 +102,9 @@ auto	Vita3DObj::UploadInVRAM() -> bool
 				mesh->Indices.push_back(pos);
 		}
 
-		mesh->GPUVertices = (Vector3F*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-			mesh->Vertices.size() * sizeof(Vector3F),
-			sizeof(Vector3F), SCE_GXM_MEMORY_ATTRIB_READ,
+		mesh->GPUVertices = (float*)gpu_alloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+			mesh->Vertices.size() * 5 * sizeof(float),
+			sizeof(float), SCE_GXM_MEMORY_ATTRIB_READ,
 			&(mesh->VerticesID));
 
 		if (!(mesh->GPUVertices))
@@ -126,8 +120,17 @@ auto	Vita3DObj::UploadInVRAM() -> bool
 			return false;
 
 		for (uint16_t v = 0u; v < mesh->Vertices.size(); v++)
-			mesh->GPUVertices[v] = mesh->Vertices[v];
-		
+		{
+			mesh->GPUVertices[v * 5] = mesh->Vertices[v].x;
+			mesh->GPUVertices[v * 5 + 1] = mesh->Vertices[v].y;
+			mesh->GPUVertices[v * 5 + 2] = mesh->Vertices[v].z;
+			if (mesh->UV.size() != 0)
+			{
+				mesh->GPUVertices[v * 5 + 3] = mesh->UV[v].x;
+				mesh->GPUVertices[v * 5 + 4] = mesh->UV[v].y;
+			}
+		}
+
 		for (uint16_t pos = 0u; pos < mesh->Indices.size(); pos++)
 			mesh->GPUIndices[pos] = mesh->Indices[pos];
 	}

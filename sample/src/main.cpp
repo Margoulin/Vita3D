@@ -18,9 +18,7 @@ int main()
 	Vita3D::SetCameraPos(Vector3F(0.0f, 0.0f, -2.0f));
 
 	int objID = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
-
 	int	obj2ID = Vita3D::LoadObject("app0:Resources/nanosuit.obj");
-
 	int texID = Vita3D::LoadTexture("app0:Resources/Master.PNG");
 
 	Vita3D::UploadObjectInVRAM(objID);
@@ -132,7 +130,6 @@ int main()
 		if (cube)
 			Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
 		Vita3D::DrawObject(obj2ID, firstCubeTransform);
-
 
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();

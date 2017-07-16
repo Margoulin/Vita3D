@@ -1,7 +1,6 @@
 #include "Vita3D.hpp"
 
 #include "Vita3DGraphicHandler.hpp"
-#include "Vita3DDebug.hpp"
 
 #include "Vita3DMath/Transform.hpp"
 #include "Vita3DMath/Matrix.hpp"
