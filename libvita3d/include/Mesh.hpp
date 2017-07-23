@@ -27,7 +27,7 @@ public:
 	std::vector<uint16_t>	Indices;
 
 	float*				GPUVertices = nullptr;
-	uint16_t*				GPUIndices = nullptr;
+	uint16_t*			GPUIndices = nullptr;
 
 	int						MaterialID = 0;
 

@@ -93,7 +93,7 @@ auto Vita3D::DrawTexture(int obj, float x, float y) -> void
 	handler->shaderManager.textureVertices[3].x = x + w;
 	handler->shaderManager.textureVertices[3].y = y + h;
 
-	texture->Bind(handler->GetContext());
+	texture->Bind(handler->GetContext(), 0);
 
 	sceGxmSetVertexStream(handler->GetContext(), 0, handler->shaderManager.textureVertices);
 	sceGxmDraw(handler->GetContext(), SCE_GXM_PRIMITIVE_TRIANGLE_STRIP, SCE_GXM_INDEX_FORMAT_U16, handler->shaderManager.textureIndices, 4);

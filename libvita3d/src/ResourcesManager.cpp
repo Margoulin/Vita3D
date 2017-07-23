@@ -3,6 +3,7 @@
 #include "SerializeObj.hpp"
 #include"Vita3DMath/Vita3DMath.hpp"
 #include <fstream>
+#include "PNGLoader.hpp"
 
 ResourcesManager*	ResourcesManager::Instance = nullptr;
 
@@ -151,6 +152,12 @@ auto	ResourcesManager::Initialize() -> void
 	mat->Diffuse = Vector3F(1.0f, 1.0f, 1.0f);
 	mat->Specular = Vector3F(1.0f, 1.0f, 1.0f);
 	customMaterials.insert(std::make_pair(0, mat));
+
+	whiteTexture = Texture::CreateEmptyTexture(8, 8);
+
+	unsigned int* texData = (unsigned int*)whiteTexture->GetDataPointer();
+	for (unsigned int pos = 0; pos < 64; pos++)
+		texData[pos] = 0xFFFFFFFF;
 }
 
 auto	ResourcesManager::Shutdown() -> void
@@ -311,6 +318,40 @@ auto	ResourcesManager::LoadObjectBinaryFile(std::string const& filename) -> int
 	return AddObject(obj);
 }
 
+auto	ResourcesManager::LoadObjectGeometryBinaryFile(std::string const& filename) -> int
+{
+	std::ifstream ifs(filename, std::ios::in);
+
+	SerializeObjGeometry sObj;
+
+	if (ifs.is_open())
+	{
+		cereal::BinaryInputArchive iarchive(ifs);
+		iarchive(sObj);
+		ifs.close();
+	}
+	else
+		return -1;
+
+	Vita3DObj*	obj = new Vita3DObj();
+	obj->filename = sObj.Name;
+
+	for (auto&& mesh : sObj.meshes)
+	{
+		Mesh* nMesh = new Mesh();
+		nMesh->Vertices = mesh.Vertices;
+		nMesh->Normals = mesh.Normals;
+		nMesh->UV = mesh.UV;
+		nMesh->Indices = mesh.Indices;
+
+		obj->meshes.push_back(nMesh);
+	}
+
+	obj->loaded = true;
+	return AddObject(obj);
+}
+
+
 auto	ResourcesManager::SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void
 {
 	Vita3DObj* obj = customObjects[ObjID];
@@ -351,6 +392,37 @@ auto	ResourcesManager::SaveObjectBinaryFile(int ObjID, std::string const& newFil
 		ofs.close();
 	}
 }
+
+auto	ResourcesManager::SaveObjectGeometryBinaryFile(int ObjID, std::string const& newFilename) -> void
+{
+	Vita3DObj* obj = customObjects[ObjID];
+	if (!obj)
+		return;
+
+	SerializeObjGeometry sObj;
+	sObj.Name = obj->filename;
+
+	for (auto&& mesh : obj->meshes)
+	{
+		SerializeObjGeometry::SMesh	sMesh;
+		sMesh.Vertices = mesh->Vertices;
+		sMesh.Normals = mesh->Normals;
+		sMesh.UV = mesh->UV;
+		sMesh.Indices = mesh->Indices;
+
+		sObj.meshes.push_back(sMesh);
+	}
+
+	std::string file = "ux0:" + newFilename + ".bog";
+	std::ofstream ofs(file, std::ios::out | std::ios::trunc);
+	if (ofs.is_open())
+	{
+		cereal::BinaryOutputArchive oarchive(ofs);
+		oarchive(sObj);
+		ofs.close();
+	}
+}
+
 
 auto	ResourcesManager::UploadObjectInVRAM(int id) -> void
 {

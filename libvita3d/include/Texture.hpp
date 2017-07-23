@@ -29,7 +29,7 @@ public:
 	static auto		FreeTexture(Texture* tex) -> void;
 	static auto		TextureFormatToBytespp(SceGxmTextureFormat format) -> int;
 
-	auto	Bind(SceGxmContext* context) -> void { sceGxmSetFragmentTexture(context, 0, &gxmTexture); }
+	auto	Bind(SceGxmContext* context, unsigned int gxmTextureID) -> void { sceGxmSetFragmentTexture(context, gxmTextureID, &gxmTexture); }
 
 	auto	SetMagFilter(SceGxmTextureFilter value) -> void { sceGxmTextureSetMagFilter(&gxmTexture, value); }
 	auto	SetMinFilter(SceGxmTextureFilter value) -> void { sceGxmTextureSetMinFilter(&gxmTexture, value); }

@@ -47,7 +47,9 @@ public:
 	static auto		LoadObject(std::string const& filename) -> int;
 	static auto		DrawTexture(int id, float x, float y) -> void;
 	static auto		LoadObjectBinary(std::string const& filename) -> int;
+	static auto		LoadObjectGeometryBinary(std::string const& filename) -> int;
 	static auto		SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void;
+	static auto		SaveObjectGeometryBinaryFile(int ObjId, std::string const& newFilename) -> void;
 	static auto		UploadObjectInVRAM(int id) -> void;
 	static auto		DeleteObjectInVRAM(int id) -> void;
 	static auto		DrawObject(int id, Transform const& transform) -> void;
@@ -57,7 +59,6 @@ public:
 	static	auto	DrawCube(Vector3F position, Vector3F scale, Vector3F color) -> void;
 	static	auto	DrawCube(Transform const& transform, Vector3F color) -> void;
 	static	auto	DrawSphere(Transform const& transform, Vector3F color) -> void;
-	//static	auto	DrawObject(Vita3DObj* object, float x, float y, float z, float w, float h, float d, unsigned int color) -> void;
 
 	auto	operator = (const Vita3D&)->Vita3D& = delete;
 	auto	operator = (Vita3D&&)->Vita3D& = delete;

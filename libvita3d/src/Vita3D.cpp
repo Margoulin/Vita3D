@@ -28,9 +28,19 @@ auto	Vita3D::LoadObjectBinary(std::string const& filename) -> int
 	return ResourcesManager::Instance->LoadObjectBinaryFile(filename);
 }
 
+auto	Vita3D::LoadObjectGeometryBinary(std::string const& filename) -> int
+{
+	return ResourcesManager::Instance->LoadObjectGeometryBinaryFile(filename);
+}
+
 auto	Vita3D::SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void
 {
 	ResourcesManager::Instance->SaveObjectBinaryFile(ObjId, newFilename);
+}
+
+auto	Vita3D::SaveObjectGeometryBinaryFile(int ObjId, std::string const& newFilename) -> void
+{
+	ResourcesManager::Instance->SaveObjectGeometryBinaryFile(ObjId, newFilename);
 }
 
 auto	Vita3D::UploadObjectInVRAM(int id) -> void

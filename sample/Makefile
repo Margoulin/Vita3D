@@ -34,14 +34,20 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add Resources/Sherlock.obj=Resources/Sherlock.obj \
 		--add Resources/Sherlock.bo=Resources/Sherlock.bo \
 		--add Resources/Sherlock.mtl=Resources/Sherlock.mtl		\
+		--add Resources/Cube.obj=Resources/Cube.obj \
 		--add Resources/nanosuit.obj=Resources/nanosuit.obj \
 		--add Resources/nanosuit.mtl=Resources/nanosuit.mtl \
 		--add Resources/arm_dif.png=Resources/arm_dif.png \
+		--add Resources/arm_showroom_spec.png=Resources/arm_showroom_spec.png \
 		--add Resources/glass_dif.png=Resources/glass_dif.png \
 		--add Resources/body_dif.png=Resources/body_dif.png \
+		--add Resources/body_showroom_spec.png=Resources/body_showroom_spec.png \
 		--add Resources/hand_dif.png=Resources/hand_dif.png \
+		--add Resources/hand_showroom_spec.png=Resources/hand_showroom_spec.png \
 		--add Resources/helmet_diff.png=Resources/helmet_diff.png \
+		--add Resources/helmet_showroom_spec.png=Resources/helmet_showroom_spec.png \
 		--add Resources/leg_dif.png=Resources/leg_dif.png \
+		--add Resources/leg_showroom_spec.png=Resources/leg_showroom_spec.png \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

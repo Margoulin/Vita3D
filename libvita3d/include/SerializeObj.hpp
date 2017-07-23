@@ -69,4 +69,31 @@ struct SerializeObj
 	}
 };
 
+struct SerializeObjGeometry
+{
+	struct SMesh
+	{
+		std::vector<Vector3F>	Vertices;
+		std::vector<Vector3F>	Normals;
+		std::vector<Vector2F>	UV;
+		std::vector<uint16_t>	Indices;
+
+		template<class Archive>
+		void serialize(Archive & archive)
+		{
+			archive(Vertices, Normals, UV, Indices);
+		}
+	};
+
+	std::vector<SMesh>	meshes;
+	std::string			Name;
+
+	template<class Archive>
+	void serialize(Archive & archive)
+	{
+		archive(meshes, Name);
+	}
+
+};
+
 #endif /*__SERIALIZEOBJ_HPP__*/

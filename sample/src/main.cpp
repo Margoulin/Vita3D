@@ -41,7 +41,11 @@ int main()
 	bool	crossPressed = false;
 	bool	circlePressed = false;
 	bool	squarePressed = false;
+	bool	lPressed = false;
+	bool	rPressed = false;
 
+	bool	rstate = false;
+	bool	lstate = false;
 	bool	sherlock = false;
 	bool	texture = false;
 	bool	cube = false;
@@ -93,7 +97,26 @@ int main()
 		}
 		else
 			squarePressed = false;
-
+		if (pad.buttons & SCE_CTRL_LTRIGGER)
+		{
+			if (!lPressed)
+			{
+				lPressed = true;
+				lstate = !lstate;
+			}
+		}
+		else
+			lPressed = false;
+		if (pad.buttons & SCE_CTRL_RTRIGGER)
+		{
+			if (!rPressed)
+			{
+				rPressed = true;
+				rstate = !rstate;
+			}
+		}
+		else
+			rPressed = false;
 
 		int stickLX = pad.lx - 128;
 		int stickLY = pad.ly - 128;
@@ -126,10 +149,11 @@ int main()
 		if (sherlock)
 			Vita3D::DrawObject(objID, firstCubeTransform);
 		if (texture)
-			Vita3D::DrawTexture(texID, 20.0f, 350.0f);
+			Vita3D::DrawTexture(texID, 200.0f, 350.0f);
 		if (cube)
 			Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
-		Vita3D::DrawObject(obj2ID, firstCubeTransform);
+		if (lstate)
+			Vita3D::DrawObject(obj2ID, firstCubeTransform);
 
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();

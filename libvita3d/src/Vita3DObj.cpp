@@ -32,6 +32,20 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.diffuse_texname).c_str()))
 				newMaterial->DiffuseMapID = ResourcesManager::Instance->AddTexture(tex);
 		}
+		if (mat.specular_texname != "")
+		{
+			newMaterial->SpecularMap = mat.specular_texname;
+			newMaterial->Desc.SpecularMap = true;
+			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.specular_texname).c_str()))
+				newMaterial->SpecularMapID = ResourcesManager::Instance->AddTexture(tex);
+		}
+		if (mat.ambient_texname != "")
+		{
+			newMaterial->AmbientMap = mat.ambient_texname;
+			newMaterial->Desc.AmbientMap = true;
+			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.ambient_texname).c_str()))
+				newMaterial->AmbientMapID = ResourcesManager::Instance->AddTexture(tex);
+		}
 
 		newMaterial->Ambient = Vector3F(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
 		newMaterial->Diffuse = Vector3F(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
@@ -68,11 +82,19 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 				float vx = attrib.vertices[3 * idx.vertex_index + 0];
 				float vy = attrib.vertices[3 * idx.vertex_index + 1];
 				float vz = attrib.vertices[3 * idx.vertex_index + 2];
-				float nx = attrib.normals[3 * idx.normal_index + 0];
-				float ny = attrib.normals[3 * idx.normal_index + 1];
-				float nz = attrib.normals[3 * idx.normal_index + 2];
-				float tx = attrib.texcoords[2 * idx.texcoord_index + 0];
-				float ty = attrib.texcoords[2 * idx.texcoord_index + 1];
+				float nx = 0.0f, ny = 0.0f, nz = 0.0f;
+				if (idx.normal_index != -1)
+				{
+					nx = attrib.normals[3 * idx.normal_index + 0];
+					ny = attrib.normals[3 * idx.normal_index + 1];
+					nz = attrib.normals[3 * idx.normal_index + 2];
+				}
+				float tx = 0.0f, ty = 0.0f;
+				if (idx.texcoord_index != -1)
+				{
+					attrib.texcoords[2 * idx.texcoord_index + 0];
+					attrib.texcoords[2 * idx.texcoord_index + 1];
+				}
 
 				currentMesh->Normals.push_back(Vector3F(nx, ny, nz));
 				currentMesh->Vertices.push_back(Vector3F(vx, vy, vz));

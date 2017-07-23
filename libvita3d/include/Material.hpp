@@ -13,7 +13,9 @@ public:
 
 	struct MaterialDesc
 	{
+		bool	AmbientMap = false;
 		bool	DiffuseMap = false;
+		bool	SpecularMap = false;
 	};
 
 	MaterialDesc	Desc;
@@ -28,10 +30,17 @@ public:
 	Vector3F		Diffuse;
 	float			Shininess = 0.0f;
 
+	std::string		AmbientMap = "";
+	int				AmbientMapID = 0;
+
 	std::string		DiffuseMap = "";
 	int				DiffuseMapID = -1;
 
+	std::string		SpecularMap = "";
+	int				SpecularMapID = -1;
+
 	std::string		Name = "";
+	std::string		filename = "";
 };
 
 

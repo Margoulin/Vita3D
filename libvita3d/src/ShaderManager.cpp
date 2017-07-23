@@ -188,14 +188,20 @@ auto	ShaderManager::Initialize() -> void
 	clearIndices[2] = 2;
 
 	const SceGxmProgramParameter *paramObjectPositionAttribute = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "position");
+	const SceGxmProgramParameter *paramObjectTexcoordAttribute = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "aTexCoord");
 
-	SceGxmVertexAttribute objectVertexAttributes[1];
+	SceGxmVertexAttribute objectVertexAttributes[2];
 	SceGxmVertexStream objectVertexStreams[1];
 	objectVertexAttributes[0].streamIndex = 0;
 	objectVertexAttributes[0].offset = 0;
 	objectVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
 	objectVertexAttributes[0].componentCount = 3;
 	objectVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramObjectPositionAttribute);
+	objectVertexAttributes[1].streamIndex = 0;
+	objectVertexAttributes[1].offset = 12; // (x, y, z) * 4 = 12 bytes
+	objectVertexAttributes[1].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	objectVertexAttributes[1].componentCount = 2; // (u, v)
+	objectVertexAttributes[1].regIndex = sceGxmProgramParameterGetResourceIndex(paramObjectTexcoordAttribute);
 	objectVertexStreams[0].stride = sizeof(vita2d_texture_vertex);
 	objectVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
 	
@@ -203,7 +209,7 @@ auto	ShaderManager::Initialize() -> void
 		shaderPatcher,
 		objectVertexProgramId,
 		objectVertexAttributes,
-		1,
+		2,
 		objectVertexStreams,
 		1,
 		&objectVertexProgram);
