@@ -25,6 +25,7 @@ public:
 	std::vector<Vector3F>	Normals;
 	std::vector<Vector2F>	UV;
 	std::vector<uint16_t>	Indices;
+	std::string				Name = "";
 
 	float*				GPUVertices = nullptr;
 	uint16_t*			GPUIndices = nullptr;

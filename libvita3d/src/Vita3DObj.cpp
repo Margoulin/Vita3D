@@ -8,6 +8,14 @@
 #include "ResourcesManager.hpp"
 #include "PNGLoader.hpp"
 
+#include "Vita3D.hpp"
+
+Vita3DObj::~Vita3DObj()
+{
+	if (resource)
+		delete resource;
+}
+
 auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 {
 	filename = name;
@@ -27,24 +35,21 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 		Material*	newMaterial = new Material();
 		if (mat.diffuse_texname != "")
 		{
-			newMaterial->DiffuseMap = mat.diffuse_texname;
 			newMaterial->Desc.DiffuseMap = true;
 			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.diffuse_texname).c_str()))
-				newMaterial->DiffuseMapID = ResourcesManager::Instance->AddTexture(tex);
+				newMaterial->DiffuseMapID = ResourcesManager::Instance->AddTexture(tex)->GetID();
 		}
 		if (mat.specular_texname != "")
 		{
-			newMaterial->SpecularMap = mat.specular_texname;
 			newMaterial->Desc.SpecularMap = true;
 			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.specular_texname).c_str()))
-				newMaterial->SpecularMapID = ResourcesManager::Instance->AddTexture(tex);
+				newMaterial->SpecularMapID = ResourcesManager::Instance->AddTexture(tex)->GetID();
 		}
 		if (mat.ambient_texname != "")
 		{
-			newMaterial->AmbientMap = mat.ambient_texname;
 			newMaterial->Desc.AmbientMap = true;
 			if (Texture* tex = PNGLoader::LoadPNGFile(("app0:Resources/" + mat.ambient_texname).c_str()))
-				newMaterial->AmbientMapID = ResourcesManager::Instance->AddTexture(tex);
+				newMaterial->AmbientMapID = ResourcesManager::Instance->AddTexture(tex)->GetID();
 		}
 
 		newMaterial->Ambient = Vector3F(mat.ambient[0], mat.ambient[1], mat.ambient[2]);
@@ -54,7 +59,7 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 		newMaterial->Name = mat.name;
 
 		Mesh* mesh = new Mesh();
-		mesh->MaterialID = ResourcesManager::Instance->AddMaterial(newMaterial);
+		mesh->MaterialID = ResourcesManager::Instance->AddMaterial(newMaterial)->GetID();
 		meshes.push_back(mesh);
 	}
 

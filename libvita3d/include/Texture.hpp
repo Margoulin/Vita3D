@@ -4,6 +4,7 @@
 #include <psp2/gxm.h>
 #include <psp2/types.h>
 #include <psp2/kernel/sysmem.h>
+#include <string>
 
 #define GXM_TEX_MAX_SIZE 4096
 
@@ -14,6 +15,8 @@ typedef struct vita2d_texture_vertex {
 	float u;
 	float v;
 } vita2d_texture_vertex;
+
+class Vita3DTextureResource;
 
 class Texture
 {
@@ -42,6 +45,9 @@ public:
 	auto	GetMinFilter() const -> SceGxmTextureFilter { return sceGxmTextureGetMinFilter(&gxmTexture); }
 	auto	GetWidth() const -> unsigned int { return sceGxmTextureGetWidth(&gxmTexture); }
 	auto	GetHeight() const -> unsigned int { return sceGxmTextureGetHeight(&gxmTexture); }
+
+	Vita3DTextureResource*	resource = nullptr;
+	std::string				filename = "";
 
 private:
 	static SceKernelMemBlockType memBlockType;

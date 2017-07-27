@@ -3,6 +3,7 @@
 #include <psp2/io/fcntl.h>
 
 #include <cstring>
+#include "Texture.hpp"
 #include "Vita3DDebug.hpp"
 
 auto	PNGLoader::ReadPNGFileFn(png_structp png_ptr, png_bytep data, png_size_t length) -> void
@@ -144,6 +145,7 @@ auto	PNGLoader::LoadPNGFile(const char *filename)->Texture*
 	}
 
 	Texture* texture = LoadPNGGeneric((void *)&fd, ReadPNGFileFn);
+	texture->filename = filename;
 	sceIoClose(fd);
 	return texture;
 }

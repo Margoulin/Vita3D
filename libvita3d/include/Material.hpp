@@ -3,13 +3,22 @@
 
 #include "Vita3DMath/Vector.hpp"
 
+class Vita3DMaterialResource;
+
 class Material
 {
 public:
 	Material() = default;
 	Material(const Material&) = delete;
 	Material(Material&&) = delete;
-	~Material() = default;
+	~Material();
+
+	enum MaterialType
+	{
+		UNLIT_COLOR,
+		UNLIT_TEXTURE,
+		LIT
+	};
 
 	struct MaterialDesc
 	{
@@ -20,27 +29,28 @@ public:
 
 	MaterialDesc	Desc;
 
-	virtual auto	Bind() -> void;
+	auto	Bind() -> void;
 
 	auto	operator = (const Material&)->Material& = delete;
 	auto	operator = (Material&&)->Material& = delete;
+
+	MaterialType	Type;
 
 	Vector3F		Ambient;
 	Vector3F		Specular;
 	Vector3F		Diffuse;
 	float			Shininess = 0.0f;
 
-	std::string		AmbientMap = "";
-	int				AmbientMapID = 0;
-
-	std::string		DiffuseMap = "";
+	int				AmbientMapID = -1;
 	int				DiffuseMapID = -1;
-
-	std::string		SpecularMap = "";
 	int				SpecularMapID = -1;
+	int				UnlitTextureID = -1;
+
+	Vector3F		UnlitColor;
 
 	std::string		Name = "";
-	std::string		filename = "";
+
+	Vita3DMaterialResource*	resource = nullptr;
 };
 
 

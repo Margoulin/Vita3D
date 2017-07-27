@@ -7,13 +7,15 @@
 #include "Vita3DMath/Matrix.hpp"
 #include "Mesh.hpp"
 
+class Vita3DObjResource;
+
 class Vita3DObj
 {
 public:
 	Vita3DObj() = default;
 	Vita3DObj(const Vita3DObj&) = delete;
 	Vita3DObj(Vita3DObj&&) = delete;
-	~Vita3DObj() = default;
+	~Vita3DObj();
 
 	auto	LoadFromFile(std::string const& fileName) -> void;
 	auto	UploadInVRAM() -> bool;
@@ -30,6 +32,8 @@ public:
 
 	bool		loaded = false;
 	bool		inVRAM = false;
+
+	Vita3DObjResource* resource = nullptr;
 };
 
 #endif /*__VITA3DOBJ_HPP__*/

@@ -9,53 +9,43 @@
 Vita3DGraphicHandler*	Vita3DGraphicHandler::Instance = nullptr;
 bool					Vita3D::Initialized = false;
 
-auto	Vita3D::LoadTexture(std::string const& filename) -> int
+auto	Vita3D::DeleteObject(Vita3DObjResource* objRes) -> void
+{
+	ResourcesManager::Instance->DeleteObject(objRes->GetID());
+}
+
+auto	Vita3D::DeleteTexture(Vita3DTextureResource* texRes) -> void
+{
+	ResourcesManager::Instance->DeleteTexture(texRes->GetID());
+}
+
+auto	Vita3D::DeleteMaterial(Vita3DMaterialResource* matRes) -> void
+{
+	ResourcesManager::Instance->DeleteMaterial(matRes->GetID());
+}
+
+auto	Vita3D::LoadTexture(std::string const& filename) -> Vita3DTextureResource*
 {
 	Texture* tex = nullptr;
 	tex = PNGLoader::LoadPNGFile(filename.c_str());
 	if (tex)
 		return ResourcesManager::Instance->AddTexture(tex);
-	return -1;
+	return nullptr;
 }
 
-auto	Vita3D::LoadObject(std::string const& filename) -> int
+auto	Vita3D::LoadObject(std::string const& filename) -> Vita3DObjResource*
 {
 	return ResourcesManager::Instance->LoadObject(filename);
 }
 
-auto	Vita3D::LoadObjectBinary(std::string const& filename) -> int
+auto	Vita3D::LoadObjectBinary(std::string const& filename) -> Vita3DObjResource*
 {
 	return ResourcesManager::Instance->LoadObjectBinaryFile(filename);
 }
 
-auto	Vita3D::LoadObjectGeometryBinary(std::string const& filename) -> int
+auto	Vita3D::LoadObjectGeometryBinary(std::string const& filename) -> Vita3DObjResource*
 {
 	return ResourcesManager::Instance->LoadObjectGeometryBinaryFile(filename);
-}
-
-auto	Vita3D::SaveObjectBinaryFile(int ObjId, std::string const& newFilename) -> void
-{
-	ResourcesManager::Instance->SaveObjectBinaryFile(ObjId, newFilename);
-}
-
-auto	Vita3D::SaveObjectGeometryBinaryFile(int ObjId, std::string const& newFilename) -> void
-{
-	ResourcesManager::Instance->SaveObjectGeometryBinaryFile(ObjId, newFilename);
-}
-
-auto	Vita3D::UploadObjectInVRAM(int id) -> void
-{
-	ResourcesManager::Instance->UploadObjectInVRAM(id);
-}
-
-auto	Vita3D::DeleteObjectInVRAM(int id) -> void
-{
-	ResourcesManager::Instance->DeleteObjectInVRAM(id);
-}
-
-auto	Vita3D::DeleteObject(int id) -> void
-{
-	ResourcesManager::Instance->DeleteObject(id);
 }
 
 auto Vita3D::Initialize() -> void
@@ -147,4 +137,11 @@ auto	Vita3D::GetCameraRotation() -> Quaternion&
 auto	Vita3D::RotateCamera(Vector3F const& val) -> void
 {
 	return Vita3DGraphicHandler::Instance->GetCamera()->Rotate(val);
+}
+
+Vita3DTextureResource::Vita3DTextureResource(unsigned int width, unsigned int height, unsigned int texID)
+{
+	id = texID;
+	textureWidth = width;
+	textureHeight = height;
 }

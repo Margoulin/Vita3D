@@ -6,6 +6,7 @@
 #include "Texture.hpp"
 
 #include <map>
+#include "Vita3D.hpp"
 
 class ResourcesManager
 {
@@ -26,29 +27,24 @@ public:
 	auto	Initialize() -> void;
 	auto	Shutdown() -> void;
 
-	auto	GetObject(int id) const -> Vita3DObj*;
-	auto	GetMaterial(int id) const -> Material*;
-	auto	GetTexture(int id) const -> Texture*;
 	auto	GetWhiteTexture() const -> Texture* { return whiteTexture; }
 
-	auto	AddMaterial(Material* mat) -> int;
-	auto	DeleteMaterial(int id) -> void;
+	auto	AddMaterial(Material* mat) -> Vita3DMaterialResource*;
+	auto	GetMaterial(unsigned int id) const -> Material*;
+	auto	DeleteMaterial(unsigned int id) -> void;
 
-	auto	AddObject(Vita3DObj* obj) -> int;
-	auto	DeleteObject(int id) -> void;
+	auto	AddObject(Vita3DObj* obj) -> Vita3DObjResource*;
+	auto	GetObject(unsigned int idx) const -> Vita3DObj*;
+	auto	DeleteObject(unsigned int idx) -> void;
 
-	auto	AddTexture(Texture* tex) -> int;
-	auto	DeleteTexture(int id) -> void;
+	auto	AddTexture(Texture* tex) -> Vita3DTextureResource*;
+	auto	GetTexture(unsigned int id) const -> Texture*;
+	auto	DeleteTexture(unsigned int id) -> void;
 
-	auto	LoadObject(std::string const& filename) -> int;
-	auto	LoadObjectBinaryFile(std::string const& filename) -> int;
-	auto	LoadObjectGeometryBinaryFile(std::string const& filename) -> int;
-	auto	SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void;
-	auto	SaveObjectGeometryBinaryFile(int ObjID, std::string const& newFilename) -> void;
+	auto	LoadObject(std::string const& filename) -> Vita3DObjResource*;
+	auto	LoadObjectBinaryFile(std::string const& filename) -> Vita3DObjResource*;
+	auto	LoadObjectGeometryBinaryFile(std::string const& filename) -> Vita3DObjResource*;
 	
-	auto	UploadObjectInVRAM(int id) -> void;
-	auto	DeleteObjectInVRAM(int id) -> void;
-
 	auto	DrawPrimitive(PRIMITIVE_TYPE type, Matrix4x4F const& wvpMat) -> void;
 	auto	DrawObject(int id, Matrix4x4F const& wvpMat) -> void;
 
@@ -58,7 +54,7 @@ public:
 protected:
 
 private:
-	std::map<int, Texture*>	textures;
+	std::map<int, Texture*>		textures;
 	std::map<int, Vita3DObj*>	customObjects;
 	std::map<int, Material*>	customMaterials;
 

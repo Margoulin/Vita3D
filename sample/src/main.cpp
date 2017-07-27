@@ -17,16 +17,19 @@ int main()
 
 	Vita3D::SetCameraPos(Vector3F(0.0f, 0.0f, -2.0f));
 
-	int objID = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
-	int	obj2ID = Vita3D::LoadObject("app0:Resources/nanosuit.obj");
-	int texID = Vita3D::LoadTexture("app0:Resources/Master.PNG");
+	Vita3DObjResource* sherlockObj = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
+	Vita3DObjResource* nanosuit = Vita3D::LoadObject("app0:Resources/nanosuit.obj");
+	Vita3DTextureResource* master = Vita3D::LoadTexture("app0:Resources/Master.PNG");
 
-	Vita3D::UploadObjectInVRAM(objID);
-	if (obj2ID)
-		Vita3D::UploadObjectInVRAM(obj2ID);
+	sherlockObj->UploadInVRAM();
+	nanosuit->UploadInVRAM();
 
 	Transform	firstCubeTransform;
 	firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
+
+	Vita3DDebug::Print("Nanosuit : ");
+	for (unsigned int pos = 0; pos < nanosuit->GetMeshesNbr(); pos++)
+		Vita3DDebug::Print(nanosuit->GetMeshResource(pos)->GetMaterial()->ToString());
 
 	Vector3F firstCubePos;
 	Vector3F firstCubeScale(1.0f, 1.0f, 1.0f);
@@ -147,17 +150,20 @@ int main()
 		Vita3D::ClearScreen();
 
 		if (sherlock)
-			Vita3D::DrawObject(objID, firstCubeTransform);
+			sherlockObj->Draw(firstCubeTransform);
 		if (texture)
-			Vita3D::DrawTexture(texID, 200.0f, 350.0f);
+			master->Draw(200.0f, 350.0f);
 		if (cube)
 			Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
 		if (lstate)
-			Vita3D::DrawObject(obj2ID, firstCubeTransform);
+			nanosuit->Draw(firstCubeTransform);
 
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();
 	}
+
+	Vita3D::DeleteTexture(master);
+	Vita3D::DeleteObject(nanosuit);
 
 	Vita3D::Shutdown();
 

@@ -4,6 +4,12 @@
 #include "ResourcesManager.hpp"
 #include "Vita3DDebug.hpp"
 
+Material::~Material()
+{
+	if (resource)
+		delete resource;
+}
+
 auto	Material::Bind() -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;

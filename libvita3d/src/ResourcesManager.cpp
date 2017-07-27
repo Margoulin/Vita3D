@@ -180,41 +180,33 @@ auto	ResourcesManager::Shutdown() -> void
 	textures.clear();
 }
 
-auto	ResourcesManager::GetObject(int id) const -> Vita3DObj*
-{
-	auto it = customObjects.find(id);
-
-	if (it == customObjects.end())
-		return nullptr;
-	return it->second;
-}
-
-auto	ResourcesManager::GetMaterial(int id) const -> Material*
+auto	ResourcesManager::GetMaterial(unsigned int id) const -> Material*
 {
 	auto it = customMaterials.find(id);
-
 	if (it == customMaterials.end())
 		return nullptr;
 	return it->second;
 }
 
-auto	ResourcesManager::GetTexture(int id) const -> Texture*
+auto	ResourcesManager::GetTexture(unsigned int id) const -> Texture*
 {
 	auto it = textures.find(id);
-
 	if (it == textures.end())
 		return nullptr;
 	return it->second;
 }
 
-auto	ResourcesManager::AddMaterial(Material* mat) -> int
+auto	ResourcesManager::AddMaterial(Material* mat) -> Vita3DMaterialResource*
 {
 	matNbr++;
 	customMaterials.insert(std::make_pair(matNbr, mat));
-	return matNbr;
+	Vita3DMaterialResource* tempRes = new Vita3DMaterialResource((MaterialType)mat->Type, mat->Name, matNbr);
+	tempRes->UpdateValues((void*)mat);
+	mat->resource = tempRes;
+	return tempRes;
 }
 
-auto	ResourcesManager::DeleteMaterial(int id) -> void
+auto	ResourcesManager::DeleteMaterial(unsigned int id) -> void
 {
 	auto it = customMaterials.find(id);
 	if (it != customMaterials.end())
@@ -224,16 +216,27 @@ auto	ResourcesManager::DeleteMaterial(int id) -> void
 	}
 }
 
-auto	ResourcesManager::AddObject(Vita3DObj* obj) -> int
+auto	ResourcesManager::AddObject(Vita3DObj* obj) -> Vita3DObjResource*
 {
 	objNbr++;
 	customObjects.insert(std::make_pair(objNbr, obj));
-	return objNbr;
+	Vita3DObjResource*	resource = new Vita3DObjResource(objNbr, (void*)obj);
+	obj->resource = resource;
+	return resource;
 }
 
-auto	ResourcesManager::DeleteObject(int id) -> void
+auto	ResourcesManager::GetObject(unsigned int idx) const -> Vita3DObj*
 {
-	auto it = customObjects.find(id);
+	auto&& it = customObjects.find(idx);
+	if (it != customObjects.end())
+		return it->second;
+	return nullptr;
+}
+
+
+auto	ResourcesManager::DeleteObject(unsigned int idx) -> void
+{
+	auto&& it = customObjects.find(idx);
 	if (it != customObjects.end())
 	{
 		it->second->Shutdown();
@@ -242,14 +245,16 @@ auto	ResourcesManager::DeleteObject(int id) -> void
 	}
 }
 
-auto	ResourcesManager::AddTexture(Texture* tex) -> int
+auto	ResourcesManager::AddTexture(Texture* tex) -> Vita3DTextureResource*
 {
 	texNbr++;
 	textures.insert(std::make_pair(texNbr, tex));
-	return texNbr;
+	Vita3DTextureResource* texRes = new Vita3DTextureResource(tex->GetWidth(), tex->GetHeight(), texNbr);
+	tex->resource = texRes;
+	return texRes;
 }
 
-auto	ResourcesManager::DeleteTexture(int id) -> void
+auto	ResourcesManager::DeleteTexture(unsigned int id) -> void
 {
 	auto it = textures.find(id);
 	if (it != textures.end())
@@ -259,7 +264,7 @@ auto	ResourcesManager::DeleteTexture(int id) -> void
 	}
 }
 
-auto	ResourcesManager::LoadObject(std::string const& filename) -> int
+auto	ResourcesManager::LoadObject(std::string const& filename) -> Vita3DObjResource*
 {
 	Vita3DObj* obj = new Vita3DObj();
 	obj->LoadFromFile(filename);
@@ -268,11 +273,11 @@ auto	ResourcesManager::LoadObject(std::string const& filename) -> int
 	else
 	{
 		obj->Shutdown();
-		return -1;
+		return nullptr;
 	}
 }
 
-auto	ResourcesManager::LoadObjectBinaryFile(std::string const& filename) -> int
+auto	ResourcesManager::LoadObjectBinaryFile(std::string const& filename) -> Vita3DObjResource*
 {
 	std::ifstream ifs(filename, std::ios::in);
 
@@ -285,7 +290,7 @@ auto	ResourcesManager::LoadObjectBinaryFile(std::string const& filename) -> int
 		ifs.close();
 	}
 	else
-		return -1;
+		return nullptr;
 
 	Vita3DObj*	obj = new Vita3DObj();
 	obj->filename = sObj.Name;
@@ -307,7 +312,7 @@ auto	ResourcesManager::LoadObjectBinaryFile(std::string const& filename) -> int
 			nMat->Shininess = mesh.Material.Shininess;
 			nMat->Name = mesh.Material.Name;
 
-			nMesh->MaterialID = AddMaterial(nMat);
+			nMesh->MaterialID = AddMaterial(nMat)->GetID();
 		}
 		else
 			nMesh->MaterialID = 0;
@@ -318,7 +323,7 @@ auto	ResourcesManager::LoadObjectBinaryFile(std::string const& filename) -> int
 	return AddObject(obj);
 }
 
-auto	ResourcesManager::LoadObjectGeometryBinaryFile(std::string const& filename) -> int
+auto	ResourcesManager::LoadObjectGeometryBinaryFile(std::string const& filename) -> Vita3DObjResource*
 {
 	std::ifstream ifs(filename, std::ios::in);
 
@@ -331,7 +336,7 @@ auto	ResourcesManager::LoadObjectGeometryBinaryFile(std::string const& filename)
 		ifs.close();
 	}
 	else
-		return -1;
+		return nullptr;
 
 	Vita3DObj*	obj = new Vita3DObj();
 	obj->filename = sObj.Name;
@@ -349,93 +354,6 @@ auto	ResourcesManager::LoadObjectGeometryBinaryFile(std::string const& filename)
 
 	obj->loaded = true;
 	return AddObject(obj);
-}
-
-
-auto	ResourcesManager::SaveObjectBinaryFile(int ObjID, std::string const& newFilename) -> void
-{
-	Vita3DObj* obj = customObjects[ObjID];
-	if (!obj)
-		return;
-
-	SerializeObj sObj;
-	sObj.Name = obj->filename;
-
-	for (auto&& mesh : obj->meshes)
-	{
-		SerializeObj::SMesh	sMesh;
-		sMesh.Vertices = mesh->Vertices;
-		sMesh.Normals = mesh->Normals;
-		sMesh.UV = mesh->UV;
-		sMesh.Indices = mesh->Indices;
-
-		Material* mat = customMaterials[mesh->MaterialID];
-		if (mesh->MaterialID == 0)
-			sMesh.IsDefaultMaterial = true;
-
-		SerializeObj::SMaterial sMat;
-		sMat.Ambient = mat->Ambient;
-		sMat.Diffuse = mat->Diffuse;
-		sMat.Specular = mat->Specular;
-		sMat.Shininess = mat->Shininess;
-		sMat.Name = mat->Name;
-		sMesh.Material = sMat;
-		sObj.meshes.push_back(sMesh);
-	}
-
-	std::string file = "ux0:" + newFilename + ".bo";
-	std::ofstream ofs(file, std::ios::out | std::ios::trunc);
-	if (ofs.is_open())
-	{
-		cereal::BinaryOutputArchive oarchive(ofs);
-		oarchive(sObj);
-		ofs.close();
-	}
-}
-
-auto	ResourcesManager::SaveObjectGeometryBinaryFile(int ObjID, std::string const& newFilename) -> void
-{
-	Vita3DObj* obj = customObjects[ObjID];
-	if (!obj)
-		return;
-
-	SerializeObjGeometry sObj;
-	sObj.Name = obj->filename;
-
-	for (auto&& mesh : obj->meshes)
-	{
-		SerializeObjGeometry::SMesh	sMesh;
-		sMesh.Vertices = mesh->Vertices;
-		sMesh.Normals = mesh->Normals;
-		sMesh.UV = mesh->UV;
-		sMesh.Indices = mesh->Indices;
-
-		sObj.meshes.push_back(sMesh);
-	}
-
-	std::string file = "ux0:" + newFilename + ".bog";
-	std::ofstream ofs(file, std::ios::out | std::ios::trunc);
-	if (ofs.is_open())
-	{
-		cereal::BinaryOutputArchive oarchive(ofs);
-		oarchive(sObj);
-		ofs.close();
-	}
-}
-
-
-auto	ResourcesManager::UploadObjectInVRAM(int id) -> void
-{
-	auto it = customObjects.find(id);
-	if (it != customObjects.end())
-		it->second->UploadInVRAM();
-}
-
-auto	ResourcesManager::DeleteObjectInVRAM(int id) -> void
-{
-	auto it = customObjects.find(id);
-	if (it != customObjects.end())
-		it->second->DeleteFromVRAM();
 }
 
 auto	ResourcesManager::DrawPrimitive(PRIMITIVE_TYPE type, Matrix4x4F const& wvpMat) -> void

@@ -48,7 +48,7 @@ auto Vita3D::DrawSphere(Transform const& transform, Vector3F color) -> void
 }
 
 
-auto Vita3D::DrawObject(int obj, Transform const& transform) -> void
+auto Vita3DObjResource::Draw(Transform const& transform) const -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 
@@ -60,14 +60,14 @@ auto Vita3D::DrawObject(int obj, Transform const& transform) -> void
 	SceGxmCullMode cull = SCE_GXM_CULL_CW;
 	sceGxmSetCullMode(handler->GetContext(), cull);
 
-	ResourcesManager::Instance->DrawObject(obj, finalMat);
+	ResourcesManager::Instance->DrawObject(this->id, finalMat);
 }
 
-auto Vita3D::DrawTexture(int obj, float x, float y) -> void
+auto Vita3DTextureResource::Draw(float x, float y) -> void
 {
 	Vita3DGraphicHandler*	handler = Vita3DGraphicHandler::Instance;
 
-	Texture* texture = ResourcesManager::Instance->GetTexture(obj);
+	Texture* texture = ResourcesManager::Instance->GetTexture(id);
 
 	SceGxmCullMode cull = SCE_GXM_CULL_NONE;
 	sceGxmSetCullMode(handler->GetContext(), cull);
