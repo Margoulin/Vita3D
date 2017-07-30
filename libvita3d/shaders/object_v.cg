@@ -1,8 +1,0 @@
-float4 main(float3 position, 
-		float2 aTexCoord, 
-		uniform float4x4 u_mvp_matrix,
-		out float2 vTexCoord : TEXCOORD0) : POSITION
-{
-	vTexCoord = aTexCoord;
-	return mul(float4(position, 1.0f), u_mvp_matrix);
-}

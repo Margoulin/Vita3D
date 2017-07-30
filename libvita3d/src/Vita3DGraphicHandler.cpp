@@ -218,7 +218,7 @@ auto	Vita3DGraphicHandler::ClearScreen() -> void
 
 	void *color_buffer;
 	sceGxmReserveFragmentDefaultUniformBuffer(context, &color_buffer);
-	sceGxmSetUniformDataF(color_buffer, shaderManager._vita3d_clearClearColorParam,
+	sceGxmSetUniformDataF(color_buffer, shaderManager.clearClearColorParam,
 		0, 4, clearColor);
 
 	sceGxmSetVertexStream(context, 0, shaderManager.clearVertices);

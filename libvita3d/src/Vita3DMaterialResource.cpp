@@ -38,7 +38,27 @@ auto	Vita3DMaterialResource::SetName(std::string const& value) -> void
 	mat->Name = value;
 	name = value;
 }
-	
+
+auto	Vita3DMaterialResource::SetUnlitTexture(Vita3DTextureResource* texRes) -> void
+{
+	Material* mat = ResourcesManager::Instance->GetMaterial(id);
+	mat->UnlitTextureID = texRes->GetID();
+	Texture* tempTex = ResourcesManager::Instance->GetTexture(texRes->GetID());
+	if (tempTex)
+		unlitTextureName = tempTex->filename;
+}
+
+auto	Vita3DMaterialResource::SetUnlitColor(Vector3F const& value) const -> void
+{
+	Material* mat = ResourcesManager::Instance->GetMaterial(id);
+	mat->UnlitColor = value;
+}
+
+auto	Vita3DMaterialResource::GetUnlitColor() const -> Vector3F
+{
+	return ResourcesManager::Instance->GetMaterial(id)->UnlitColor;
+}
+
 auto	Vita3DMaterialResource::GetUnlitTexture() const -> Vita3DTextureResource*
 {
 	ResourcesManager* resMgr = ResourcesManager::Instance;

@@ -31,12 +31,7 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add sce_sys/livearea/contents/startup.png=sce_sys/livearea/contents/startup.png \
 		--add sce_sys/livearea/contents/template.xml=sce_sys/livearea/contents/template.xml \
 		--add Resources/Master.PNG=Resources/Master.PNG \
-		--add Resources/Sherlock.obj=Resources/Sherlock.obj \
 		--add Resources/Sherlock.bo=Resources/Sherlock.bo \
-		--add Resources/Sherlock.mtl=Resources/Sherlock.mtl		\
-		--add Resources/Cube.obj=Resources/Cube.obj \
-		--add Resources/nanosuit.obj=Resources/nanosuit.obj \
-		--add Resources/nanosuit.mtl=Resources/nanosuit.mtl \
 		--add Resources/arm_dif.png=Resources/arm_dif.png \
 		--add Resources/arm_showroom_spec.png=Resources/arm_showroom_spec.png \
 		--add Resources/glass_dif.png=Resources/glass_dif.png \
@@ -48,6 +43,9 @@ $(PROJECT).vpk: eboot.bin param.sfo
 		--add Resources/helmet_showroom_spec.png=Resources/helmet_showroom_spec.png \
 		--add Resources/leg_dif.png=Resources/leg_dif.png \
 		--add Resources/leg_showroom_spec.png=Resources/leg_showroom_spec.png \
+		--add Resources/Uchiyamada.PNG=Resources/Uchiyamada.PNG \
+		--add Resources/Nanosuit.bo=Resources/Nanosuit.bo \
+		--add Resources/Cube.bo=Resources/Cube.bo \
 	$(PROJECT).vpk
 
 eboot.bin: $(PROJECT).velf

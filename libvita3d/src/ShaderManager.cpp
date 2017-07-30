@@ -12,17 +12,21 @@
 
 extern SceGxmProgram _binary_shaders_clear_v_gxp_start;
 extern SceGxmProgram _binary_shaders_clear_f_gxp_start;
-extern SceGxmProgram _binary_shaders_object_v_gxp_start;
-extern SceGxmProgram _binary_shaders_object_f_gxp_start;
+extern SceGxmProgram _binary_shaders_litLightingMap_v_gxp_start;
+extern SceGxmProgram _binary_shaders_litLightingMap_f_gxp_start;
 extern SceGxmProgram _binary_shaders_texture_v_gxp_start;
 extern SceGxmProgram _binary_shaders_texture_f_gxp_start;
+extern SceGxmProgram _binary_shaders_unlitColor_v_gxp_start;
+extern SceGxmProgram _binary_shaders_unlitColor_f_gxp_start;
 
 static const SceGxmProgram *const 	clearVertexProgramGxp = &_binary_shaders_clear_v_gxp_start;
 static const SceGxmProgram *const 	clearFragmentProgramGxp = &_binary_shaders_clear_f_gxp_start;
-static const SceGxmProgram *const objectVertexProgramGxp = &_binary_shaders_object_v_gxp_start;
-static const SceGxmProgram *const 	objectFragmentProgramGxp = &_binary_shaders_object_f_gxp_start;
-static const SceGxmProgram *const textureVertexProgramGxp = &_binary_shaders_texture_v_gxp_start;
+static const SceGxmProgram *const	objectVertexProgramGxp = &_binary_shaders_litLightingMap_v_gxp_start;
+static const SceGxmProgram *const 	objectFragmentProgramGxp = &_binary_shaders_litLightingMap_f_gxp_start;
+static const SceGxmProgram *const	textureVertexProgramGxp = &_binary_shaders_texture_v_gxp_start;
 static const SceGxmProgram *const 	textureFragmentProgramGxp = &_binary_shaders_texture_f_gxp_start;
+static const SceGxmProgram *const 	unlitColorVertexProgramGxp = &_binary_shaders_unlitColor_v_gxp_start;
+static const SceGxmProgram *const 	unlitColorFragmentProgramGxp = &_binary_shaders_unlitColor_f_gxp_start;
 
 static void *patcher_host_alloc(void *user_data, unsigned int size)
 {
@@ -87,13 +91,17 @@ auto	ShaderManager::Initialize() -> void
 	sceGxmProgramCheck(objectVertexProgramGxp);
 	sceGxmProgramCheck(textureFragmentProgramGxp);
 	sceGxmProgramCheck(textureVertexProgramGxp);
+	sceGxmProgramCheck(unlitColorVertexProgramGxp);
+	sceGxmProgramCheck(unlitColorFragmentProgramGxp);
 
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearVertexProgramGxp, &clearVertexProgramId);
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearFragmentProgramGxp, &clearFragmentProgramId);
-	sceGxmShaderPatcherRegisterProgram(shaderPatcher, objectVertexProgramGxp, &objectVertexProgramId);
-	sceGxmShaderPatcherRegisterProgram(shaderPatcher, objectFragmentProgramGxp, &objectFragmentProgramId);
+	sceGxmShaderPatcherRegisterProgram(shaderPatcher, objectVertexProgramGxp, &litLightingMapVertexProgramId);
+	sceGxmShaderPatcherRegisterProgram(shaderPatcher, objectFragmentProgramGxp, &litLightingMapFragmentProgramId);
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureVertexProgramGxp, &textureVertexProgramId);
 	sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureFragmentProgramGxp, &textureFragmentProgramId);
+	sceGxmShaderPatcherRegisterProgram(shaderPatcher, unlitColorVertexProgramGxp, &unlitColorVertexProgramId);
+	sceGxmShaderPatcherRegisterProgram(shaderPatcher, unlitColorFragmentProgramGxp, &unlitColorFragmentProgramId);
 
 	static SceGxmBlendInfo blend_info;
 	blend_info.colorFunc = SCE_GXM_BLEND_FUNC_ADD;
@@ -187,7 +195,7 @@ auto	ShaderManager::Initialize() -> void
 	clearIndices[1] = 1;
 	clearIndices[2] = 2;
 
-	const SceGxmProgramParameter *paramObjectPositionAttribute = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "position");
+	const SceGxmProgramParameter *paramObjectPositionAttribute = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "aPosition");
 	const SceGxmProgramParameter *paramObjectTexcoordAttribute = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "aTexCoord");
 
 	SceGxmVertexAttribute objectVertexAttributes[2];
@@ -207,21 +215,21 @@ auto	ShaderManager::Initialize() -> void
 	
 	sceGxmShaderPatcherCreateVertexProgram(
 		shaderPatcher,
-		objectVertexProgramId,
+		litLightingMapVertexProgramId,
 		objectVertexAttributes,
 		2,
 		objectVertexStreams,
 		1,
-		&objectVertexProgram);
+		&litLightingMapVertexProgram);
 
 	sceGxmShaderPatcherCreateFragmentProgram(
 		shaderPatcher,
-		objectFragmentProgramId,
+		litLightingMapFragmentProgramId,
 		SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
 		MSAA_MODE,
 		&blend_info,
 		objectVertexProgramGxp,
-		&objectFragmentProgram);
+		&litLightingMapFragmentProgram);
 
 	const SceGxmProgramParameter *paramTexturePositionAttribute = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "aPosition");
 	const SceGxmProgramParameter *paramTextureTexcoordAttribute = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "aTexcoord");
@@ -264,13 +272,49 @@ auto	ShaderManager::Initialize() -> void
 		textureVertexProgramGxp,
 		&textureFragmentProgram);
 
-	_vita3d_clearClearColorParam = sceGxmProgramFindParameterByName(clearFragmentProgramGxp, "uClearColor");
-	_vita3d_objectMvpParam = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "u_mvp_matrix");
+	const SceGxmProgramParameter *paramUnlitColorPositionAttribute = sceGxmProgramFindParameterByName(unlitColorVertexProgramGxp, "position");
+
+	// create texture vertex format
+	SceGxmVertexAttribute unlitColorVertexAttributes[1];
+	SceGxmVertexStream unlitColorVertexStreams[1];
+	/* x,y,z: 3 float 32 bits */
+	unlitColorVertexAttributes[0].streamIndex = 0;
+	unlitColorVertexAttributes[0].offset = 0;
+	unlitColorVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	unlitColorVertexAttributes[0].componentCount = 3; // (x, y, z)
+	unlitColorVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramUnlitColorPositionAttribute);
+	// 16 bit (short) indices
+	unlitColorVertexStreams[0].stride = sizeof(vita2d_texture_vertex);
+	unlitColorVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
+
+	// create texture shaders
+	sceGxmShaderPatcherCreateVertexProgram(
+		shaderPatcher,
+		unlitColorVertexProgramId,
+		unlitColorVertexAttributes,
+		1,
+		unlitColorVertexStreams,
+		1,
+		&unlitColorVertexProgram);
+
+	sceGxmShaderPatcherCreateFragmentProgram(
+		shaderPatcher,
+		unlitColorFragmentProgramId,
+		SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
+		MSAA_MODE,
+		&blend_info,
+		unlitColorVertexProgramGxp,
+		&unlitColorFragmentProgram);
+
+	clearClearColorParam = sceGxmProgramFindParameterByName(clearFragmentProgramGxp, "uClearColor");
+	litLightingMapMvpParam = sceGxmProgramFindParameterByName(objectVertexProgramGxp, "wvp");
 	textureMvpParam = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "wvp");
 	materialAmbient = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.ambient");
 	materialDiffuse = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.diffuse");
 	materialSpecular = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.specular");
 	materialShininess = sceGxmProgramFindParameterByName(objectFragmentProgramGxp, "u_material.shininess");
+	unlitColorParam = sceGxmProgramFindParameterByName(unlitColorFragmentProgramGxp, "u_color");
+	unlitColorMvpParam = sceGxmProgramFindParameterByName(unlitColorVertexProgramGxp, "u_mvp_matrix");
 }
 
 auto	ShaderManager::Shutdown() -> void
@@ -282,19 +326,30 @@ auto	ShaderManager::ReleaseShaders() -> void
 {
 	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, clearFragmentProgram);
 	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, clearVertexProgram);
-	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, objectFragmentProgram);
-	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, objectVertexProgram);
+	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, litLightingMapFragmentProgram);
+	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, litLightingMapVertexProgram);
+
+	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, textureFragmentProgram);
+	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, textureVertexProgram);
+	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, unlitColorFragmentProgram);
+	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, unlitColorVertexProgram);
 
 	gpu_free(clearIndicesUid);
 	gpu_free(clearVerticesUid);
+	gpu_free(textureIndicesUID);
+	gpu_free(textureVerticesUID);
 }
 
 auto	ShaderManager::UnregisterPrograms() -> void
 {
 	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, clearFragmentProgramId);
 	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, clearVertexProgramId);
-	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, objectFragmentProgramId);
-	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, objectVertexProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, litLightingMapFragmentProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, litLightingMapVertexProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, unlitColorFragmentProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, unlitColorVertexProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, textureFragmentProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, textureVertexProgramId);
 
 	sceGxmShaderPatcherDestroy(shaderPatcher);
 	fragment_usse_free(patcherFragmentUsseUid);

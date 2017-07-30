@@ -34,7 +34,7 @@ public:
 	auto	operator = (const Material&)->Material& = delete;
 	auto	operator = (Material&&)->Material& = delete;
 
-	MaterialType	Type;
+	MaterialType	Type = Material::LIT;
 
 	Vector3F		Ambient;
 	Vector3F		Specular;

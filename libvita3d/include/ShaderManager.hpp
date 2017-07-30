@@ -31,12 +31,14 @@ public:
 	SceGxmVertexProgram *clearVertexProgram = nullptr;
 	SceGxmFragmentProgram *clearFragmentProgram = nullptr;
 
-	SceGxmShaderPatcherId clearVertexProgramId;
-	SceGxmShaderPatcherId clearFragmentProgramId;
-	SceGxmShaderPatcherId objectVertexProgramId;
-	SceGxmShaderPatcherId objectFragmentProgramId;
-	SceGxmShaderPatcherId textureVertexProgramId;
-	SceGxmShaderPatcherId textureFragmentProgramId;
+	SceGxmShaderPatcherId	clearVertexProgramId;
+	SceGxmShaderPatcherId	clearFragmentProgramId;
+	SceGxmShaderPatcherId	litLightingMapVertexProgramId;
+	SceGxmShaderPatcherId	litLightingMapFragmentProgramId;
+	SceGxmShaderPatcherId	textureVertexProgramId;
+	SceGxmShaderPatcherId	textureFragmentProgramId;
+	SceGxmShaderPatcherId	unlitColorVertexProgramId;
+	SceGxmShaderPatcherId	unlitColorFragmentProgramId;
 
 
 	SceUID clearVerticesUid = 0;
@@ -49,13 +51,17 @@ public:
 	vita2d_texture_vertex*	textureVertices = nullptr;
 	uint16_t*				textureIndices = nullptr;
 
-	SceGxmVertexProgram*	objectVertexProgram = nullptr;
-	SceGxmFragmentProgram*	objectFragmentProgram = nullptr;
+	SceGxmVertexProgram*	litLightingMapVertexProgram = nullptr;
+	SceGxmFragmentProgram*	litLightingMapFragmentProgram = nullptr;
 	SceGxmVertexProgram *	textureVertexProgram = nullptr;
 	SceGxmFragmentProgram *	textureFragmentProgram = nullptr;
-	
-	const SceGxmProgramParameter *_vita3d_clearClearColorParam = nullptr;
-	const SceGxmProgramParameter *_vita3d_objectMvpParam = nullptr;
+	SceGxmVertexProgram*	unlitColorVertexProgram = nullptr;
+	SceGxmFragmentProgram*	unlitColorFragmentProgram = nullptr;
+
+	const SceGxmProgramParameter*	clearClearColorParam = nullptr;
+	const SceGxmProgramParameter*	unlitColorMvpParam = nullptr;
+	const SceGxmProgramParameter*	unlitColorParam = nullptr;
+	const SceGxmProgramParameter*	litLightingMapMvpParam = nullptr;
 	const SceGxmProgramParameter*	textureMvpParam = nullptr;
 	const SceGxmProgramParameter*	materialAmbient = nullptr;
 	const SceGxmProgramParameter*	materialDiffuse = nullptr;

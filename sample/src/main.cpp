@@ -18,18 +18,17 @@ int main()
 	Vita3D::SetCameraPos(Vector3F(0.0f, 0.0f, -2.0f));
 
 	Vita3DObjResource* sherlockObj = Vita3D::LoadObjectBinary("app0:Resources/Sherlock.bo");
-	Vita3DObjResource* nanosuit = Vita3D::LoadObject("app0:Resources/nanosuit.obj");
+	Vita3DObjResource* nanosuit = Vita3D::LoadObjectBinary("app0:Resources/Nanosuit.bo");
 	Vita3DTextureResource* master = Vita3D::LoadTexture("app0:Resources/Master.PNG");
+	Vita3DTextureResource* uchi = Vita3D::LoadTexture("app0:Resources/Uchiyamada.PNG");
+	Vita3DObjResource* cube = Vita3D::LoadObjectBinary("app0:Resources/Cube.bo");
 
 	sherlockObj->UploadInVRAM();
 	nanosuit->UploadInVRAM();
+	cube->UploadInVRAM();
 
 	Transform	firstCubeTransform;
 	firstCubeTransform.SetRotation(Vector3F::up * 45.0f * degToRad);
-
-	Vita3DDebug::Print("Nanosuit : ");
-	for (unsigned int pos = 0; pos < nanosuit->GetMeshesNbr(); pos++)
-		Vita3DDebug::Print(nanosuit->GetMeshResource(pos)->GetMaterial()->ToString());
 
 	Vector3F firstCubePos;
 	Vector3F firstCubeScale(1.0f, 1.0f, 1.0f);
@@ -44,14 +43,16 @@ int main()
 	bool	crossPressed = false;
 	bool	circlePressed = false;
 	bool	squarePressed = false;
+	bool	trianglePressed = false;
 	bool	lPressed = false;
 	bool	rPressed = false;
 
+	int rNbr = 0;
 	bool	rstate = false;
 	bool	lstate = false;
 	bool	sherlock = false;
 	bool	texture = false;
-	bool	cube = false;
+	bool	triangle = false;
 
 	while (run)
 	{
@@ -80,12 +81,22 @@ int main()
 		}
 		else
 			circlePressed = false;
+		if (pad.buttons & SCE_CTRL_TRIANGLE)
+		{
+			if (!trianglePressed)
+			{
+				trianglePressed = true;
+				triangle = !triangle;
+			}
+		}
+		else
+			trianglePressed = false;
 		if (pad.buttons & SCE_CTRL_CROSS)
 		{
 			if (!crossPressed)
 			{
 				crossPressed = true;
-				cube = !cube;
+		//		cube = !cube;
 			}
 		}
 		else
@@ -115,7 +126,49 @@ int main()
 			if (!rPressed)
 			{
 				rPressed = true;
-				rstate = !rstate;
+				if (rNbr == 0)
+				{
+					rNbr++;
+					Vita3DMaterialResource* mat = nullptr;
+					if (triangle)
+						mat = cube->GetMeshResource(0)->GetMaterial();
+					else
+						mat = nanosuit->GetMeshResource(1)->GetMaterial();
+					mat->SetType(MaterialType::UNLIT_COLOR);
+					mat->SetUnlitColor(Vector3F(0.5f, 0.2f, 0.7f));
+				}
+				else if (rNbr == 1)
+				{
+					rNbr++;
+					Vita3DMaterialResource* mat = nullptr;
+					if (triangle)
+						mat = cube->GetMeshResource(0)->GetMaterial();
+					else
+						mat = nanosuit->GetMeshResource(1)->GetMaterial();
+					mat->SetType(MaterialType::UNLIT_TEXTURE);
+					mat->SetUnlitTexture(master);
+				}
+				else if (rNbr == 2)
+				{
+					rNbr++;
+					Vita3DMaterialResource* mat = nullptr;
+					if (triangle)
+						mat = cube->GetMeshResource(0)->GetMaterial();
+					else
+						mat = nanosuit->GetMeshResource(1)->GetMaterial();
+					mat->SetType(MaterialType::UNLIT_TEXTURE);
+					mat->SetUnlitTexture(uchi);
+				}
+				else
+				{
+					rNbr = 0;
+					Vita3DMaterialResource* mat = nullptr;
+					if (triangle)
+						mat = cube->GetMeshResource(0)->GetMaterial();
+					else
+						mat = nanosuit->GetMeshResource(1)->GetMaterial();
+					mat->SetType(MaterialType::LIT);
+				}
 			}
 		}
 		else
@@ -152,18 +205,23 @@ int main()
 		if (sherlock)
 			sherlockObj->Draw(firstCubeTransform);
 		if (texture)
-			master->Draw(200.0f, 350.0f);
-		if (cube)
-			Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
+			uchi->Draw(200.0f, 350.0f);
+		//if (cube)
+		//	Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
 		if (lstate)
-			nanosuit->Draw(firstCubeTransform);
+		{
+			if (triangle)
+				cube->Draw(firstCubeTransform);
+			else
+				nanosuit->Draw(firstCubeTransform);
+		}
 
 		Vita3D::EndDrawing();
 		Vita3D::SwapBuffers();
 	}
 
 	Vita3D::DeleteTexture(master);
-	Vita3D::DeleteObject(nanosuit);
+	//Vita3D::DeleteObject(nanosuit);
 
 	Vita3D::Shutdown();
 

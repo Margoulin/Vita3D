@@ -58,9 +58,14 @@ public:
 	auto	SetType(MaterialType const& value) -> void;
 	auto	SetName(std::string const& value) -> void;
 
+	auto	SetUnlitTexture(Vita3DTextureResource* texRes) -> void;
+	auto	SetUnlitColor(Vector3F const& value) const -> void;
+
 	auto	GetName() const -> std::string const& { return name; }
 	auto	GetType() const -> MaterialType { return type; }
-	
+
+	auto	GetUnlitColor() const -> Vector3F;
+
 	auto	GetUnlitTexture() const -> Vita3DTextureResource*;
 	auto	GetUnlitTextureName() const -> std::string const& { return unlitTextureName; }
 	auto	GetLitAmbientMap() const -> Vita3DTextureResource*;
