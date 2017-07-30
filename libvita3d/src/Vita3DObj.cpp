@@ -97,8 +97,8 @@ auto	Vita3DObj::LoadFromFile(std::string const& name) -> void
 				float tx = 0.0f, ty = 0.0f;
 				if (idx.texcoord_index != -1)
 				{
-					attrib.texcoords[2 * idx.texcoord_index + 0];
-					attrib.texcoords[2 * idx.texcoord_index + 1];
+					tx = attrib.texcoords[2 * idx.texcoord_index + 0];
+					ty = attrib.texcoords[2 * idx.texcoord_index + 1];
 				}
 
 				currentMesh->Normals.push_back(Vector3F(nx, ny, nz));

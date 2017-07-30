@@ -79,7 +79,7 @@ auto Vita3DTextureResource::Draw(float x, float y) -> void
 
 	void *vertexDefaultBuffer;
 	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
-	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager._vita3d_objectMvpParam, 0, 16, finalMat.GetArray());
+	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager.textureMvpParam, 0, 16, finalMat.GetArray());
 
 	float w = texture->GetWidth();
 	float h = texture->GetHeight();
