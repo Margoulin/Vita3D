@@ -152,15 +152,23 @@ auto	ShaderManager::Initialize() -> void
 		sizeof(uint16_t), SCE_GXM_MEMORY_ATTRIB_READ,
 		&textureIndicesUID);
 
+	textureVertices[0].x = 0.0f;
+	textureVertices[0].y = 0.0f;
 	textureVertices[0].z = +0.5f;
 	textureVertices[0].u = 0.0f;
 	textureVertices[0].v = 0.0f;
+	textureVertices[1].x = 1.0f;
+	textureVertices[1].y = 0.0f;
 	textureVertices[1].z = +0.5f;
 	textureVertices[1].u = 1.0f;
 	textureVertices[1].v = 0.0f;
+	textureVertices[2].x = 0.0f;
+	textureVertices[2].y = 1.0f;
 	textureVertices[2].z = +0.5f;
 	textureVertices[2].u = 0.0f;
 	textureVertices[2].v = 1.0f;
+	textureVertices[3].x = 1.0f;
+	textureVertices[3].y = 1.0f;
 	textureVertices[3].z = +0.5f;
 	textureVertices[3].u = 1.0f;
 	textureVertices[3].v = 1.0f;

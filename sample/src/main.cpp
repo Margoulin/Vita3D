@@ -206,6 +206,8 @@ int main()
 			sherlockObj->Draw(firstCubeTransform);
 		if (texture)
 			uchi->Draw(200.0f, 350.0f);
+		if (triangle)
+			master->Draw(0.0f, 0.0f);
 		//if (cube)
 		//	Vita3D::DrawCube(secondTrans, Vector3F(1.0f, 0.5f, 0.0f));
 		if (lstate)

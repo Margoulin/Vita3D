@@ -75,23 +75,17 @@ auto Vita3DTextureResource::Draw(float x, float y) -> void
 	sceGxmSetVertexProgram(handler->GetContext(), handler->shaderManager.textureVertexProgram);
 	sceGxmSetFragmentProgram(handler->GetContext(), handler->shaderManager.textureFragmentProgram);
 
-	Matrix4x4F	finalMat = Matrix4x4F::Orthographic(DISPLAY_WIDTH, DISPLAY_HEIGHT, 0.0f, 1.0f);
+	float w = texture->GetWidth();
+	float h = texture->GetHeight();
+
+	Matrix4x4F	translateMat = Matrix4x4F::Translate(Matrix4x4F::identity, Vector3F(x, y, 0));
+	Matrix4x4F	scaleMat = Matrix4x4F::Scale(Matrix4x4F::identity, Vector3F(w, h, 0));
+	Matrix4x4F	ortho = Matrix4x4F::Orthographic(DISPLAY_WIDTH, DISPLAY_HEIGHT, 0.0f, 1.0f);
+	Matrix4x4F	finalMat = Matrix4x4F::Mult(ortho, Matrix4x4F::Mult(translateMat, scaleMat));
 
 	void *vertexDefaultBuffer;
 	sceGxmReserveVertexDefaultUniformBuffer(handler->GetContext(), &vertexDefaultBuffer);
 	sceGxmSetUniformDataF(vertexDefaultBuffer, handler->shaderManager.textureMvpParam, 0, 16, finalMat.GetArray());
-
-	float w = texture->GetWidth();
-	float h = texture->GetHeight();
-
-	handler->shaderManager.textureVertices[0].x = x;
-	handler->shaderManager.textureVertices[0].y = y;
-	handler->shaderManager.textureVertices[1].x = x + w;
-	handler->shaderManager.textureVertices[1].y = y;
-	handler->shaderManager.textureVertices[2].x = x;
-	handler->shaderManager.textureVertices[2].y = y + h;
-	handler->shaderManager.textureVertices[3].x = x + w;
-	handler->shaderManager.textureVertices[3].y = y + h;
 
 	texture->Bind(handler->GetContext(), 0);
 
